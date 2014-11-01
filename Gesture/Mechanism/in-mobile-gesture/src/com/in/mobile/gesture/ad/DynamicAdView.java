@@ -15,30 +15,15 @@ import android.media.FaceDetector.Face;
 import android.widget.ImageView;
 
 public class DynamicAdView extends ImageView {
-	  private int imageWidth, imageHeight;
-	  private int numberOfFace = 30;
-	  private FaceDetector myFaceDetect;
-	  private FaceDetector.Face[] myFace;
-	  float myEyesDistance;
-	  int numberOfFaceDetected;
-	  
-	  
-	   
-
-	  Bitmap myBitmap;
+	private int imageWidth, imageHeight;
+	
+	
+	
 	public DynamicAdView(Context context, int width , int height) {
 		   super(context);
 		   imageWidth= width;
 		   imageHeight = height;
-		   BitmapFactory.Options BitmapFactoryOptionsbfo = new BitmapFactory.Options();
-		   BitmapFactoryOptionsbfo.inPreferredConfig = Bitmap.Config.RGB_565;
-		   myBitmap = BitmapFactory.decodeResource(getResources(),
-		     R.drawable.ad_image, BitmapFactoryOptionsbfo);
-		   myBitmap = getResizedBitmap(myBitmap,imageHeight,imageWidth);
-		   myFace = new FaceDetector.Face[numberOfFace];
-		   myFaceDetect = new FaceDetector(imageWidth, imageHeight,
-		     numberOfFace);
-		   numberOfFaceDetected = myFaceDetect.findFaces(myBitmap, myFace);
+		  
 	}
 	
 	public Bitmap getResizedBitmap(Bitmap bm, int newHeight, int newWidth) {
@@ -68,17 +53,6 @@ public class DynamicAdView extends ImageView {
 	   myPaint.setStyle(Paint.Style.STROKE);
 	   myPaint.setStrokeWidth(3);
 
-	   for (int i = 0; i < numberOfFaceDetected; i++) {
-	    Face face = myFace[i];
-	    PointF myMidPoint = new PointF();
-	    face.getMidPoint(myMidPoint);
-	    myEyesDistance = face.eyesDistance();
-
-	    canvas.drawRect((int) (myMidPoint.x - myEyesDistance * 2),
-	      (int) (myMidPoint.y - myEyesDistance * 2),
-	      (int) (myMidPoint.x + myEyesDistance * 2),
-	      (int) (myMidPoint.y + myEyesDistance * 2), myPaint);
-	   }
-	  }
+	   	  }
 	   
 }

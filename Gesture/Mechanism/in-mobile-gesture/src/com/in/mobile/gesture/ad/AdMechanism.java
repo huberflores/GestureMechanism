@@ -1,10 +1,15 @@
 package com.in.mobile.gesture.ad;
 
-import com.in.mobile.manager.adfile.FileDownloader;
+import java.io.File;
+
+import com.in.mobile.common.utilities.Commons;
+import com.google.android.gcm.GCMRegistrar;
 
 import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.Fragment;
+import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -19,11 +24,20 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.widget.ImageView.ScaleType;
 
+/*
+ * author Huber Flores
+ * in-mobile, 2014
+ */
 
 public class AdMechanism extends ActionBarActivity implements OnTouchListener {
 	
@@ -50,6 +64,9 @@ public class AdMechanism extends ActionBarActivity implements OnTouchListener {
 	
 	DynamicAdView dynamicAdView;
 	ImageView imageView;
+	
+
+	private Bitmap myBitmap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,7 +90,26 @@ public class AdMechanism extends ActionBarActivity implements OnTouchListener {
         matrix.setScale(0.1f, 0.1f);
         
         dynamicAdView= new DynamicAdView(this,SCREENWIDTH,SCREENHEIGHT);
-        dynamicAdView.setImageResource(R.drawable.ad_image);
+        
+        
+        File dir = Environment.getExternalStorageDirectory();
+  
+        File myFile = new File(dir, "ad.jpg");
+        
+        if (myFile.exists()){
+        	BitmapFactory.Options bitmapFatoryOptions=new BitmapFactory.Options();
+            bitmapFatoryOptions.inPreferredConfig=Bitmap.Config.RGB_565;
+            myBitmap = BitmapFactory.decodeFile(myFile.getAbsolutePath(), bitmapFatoryOptions);
+            
+            dynamicAdView.setImageBitmap(myBitmap);
+            
+        }else{ 
+        	//default
+        	dynamicAdView.setImageResource(R.drawable.ad_image);
+        }
+       
+        
+        
         dynamicAdView.setScaleType(ScaleType.MATRIX);
         dynamicAdView.setImageMatrix(matrix);
         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.MATCH_PARENT);
@@ -81,11 +117,28 @@ public class AdMechanism extends ActionBarActivity implements OnTouchListener {
         dynamicAdView.setLayoutParams(params);
         dynamicAdView.setOnTouchListener(this);
         frameLayout.addView(dynamicAdView);
-     
+      
         
-        
-        FileDownloader task = new FileDownloader(getApplicationContext());
-        task.execute(new String[] { "file to download" });
+        GCMRegistrar.checkManifest(this);
+         
+        registerReceiver(mHandleMessageReceiver,
+                new IntentFilter(Commons.DISPLAY_MESSAGE_ACTION));
+         
+      
+        Thread thread = new Thread(new Runnable(){
+  	        @Override
+  	        public void run() {
+  	            try { 
+  	            	GCMRegistrar.register(getApplicationContext(), Commons.SENDER_ID);;
+  	            	
+  	            } catch (Exception e) {
+  	                e.printStackTrace();
+  	            }
+  	        }
+  	    });
+  	 
+  	    thread.start();
+  	
     }
 
 
@@ -190,6 +243,31 @@ public class AdMechanism extends ActionBarActivity implements OnTouchListener {
 	   }
 
     
+	@Override
+	protected void onPause() {
+	   super.onPause();
+       GCMRegistrar.unregister(this);
+
+	}
+	
+	@Override
+	protected void onDestroy() {
+	    super.onDestroy();
+	    
+	    unregisterReceiver(mHandleMessageReceiver);
+	    GCMRegistrar.onDestroy(this);
+	 }
+	
+	
+	private final BroadcastReceiver mHandleMessageReceiver =
+		        new BroadcastReceiver() {
+		    @Override
+		    public void onReceive(Context context, Intent intent) {
+		        String newMessage = intent.getExtras().getString(Commons.EXTRA_MESSAGE);
+		        
+		    }
+	};
+	  
     
     
     /* Support to other Android platforms start */

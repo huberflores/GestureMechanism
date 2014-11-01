@@ -39,13 +39,13 @@ public class FileDownloader extends AsyncTask<String, Void, String> {
 			        urlConnection.connect();
 			        
 			        File SDCardRoot = Environment.getExternalStorageDirectory();
-			        File file = new File(SDCardRoot,"somefile.jpg");
+			        File file = new File(SDCardRoot,"ad.jpg");
 
 			        FileOutputStream fileOutput = new FileOutputStream(file);
 			        InputStream inputStream = urlConnection.getInputStream();
 
-			        int totalSize = urlConnection.getContentLength();
-			        int downloadedSize = 0;
+			        //int totalSize = urlConnection.getContentLength();
+			        //int downloadedSize = 0;
 
 			        byte[] buffer = new byte[1024];
 			        int bufferLength = 0; 
@@ -53,7 +53,7 @@ public class FileDownloader extends AsyncTask<String, Void, String> {
 			       
 			        while ( (bufferLength = inputStream.read(buffer)) > 0 ) {
 			                fileOutput.write(buffer, 0, bufferLength);		                
-			                downloadedSize += bufferLength;
+			                //downloadedSize += bufferLength;
 			        }
 			   
 			        fileOutput.close();
