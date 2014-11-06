@@ -44,16 +44,13 @@ public class FileDownloader extends AsyncTask<String, Void, String> {
 			        FileOutputStream fileOutput = new FileOutputStream(file);
 			        InputStream inputStream = urlConnection.getInputStream();
 
-			        //int totalSize = urlConnection.getContentLength();
-			        //int downloadedSize = 0;
-
 			        byte[] buffer = new byte[1024];
 			        int bufferLength = 0; 
 
 			       
 			        while ( (bufferLength = inputStream.read(buffer)) > 0 ) {
 			                fileOutput.write(buffer, 0, bufferLength);		                
-			                //downloadedSize += bufferLength;
+			              
 			        }
 			   
 			        fileOutput.close();
