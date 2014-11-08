@@ -1,3 +1,12 @@
+/*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU General Public License for more details.
+*
+* Please send inquiries to huber AT ut DOT ee
+*/
+
 package com.in.mobile.manager.adfile;
 
 import java.io.File;
@@ -8,7 +17,11 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import com.in.mobile.database.adcontainer.DatabaseHandler;
+import com.in.mobile.gesture.ad.AdContentLoader;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.widget.Toast;
@@ -22,8 +35,15 @@ public class FileDownloader extends AsyncTask<String, Void, String> {
 	
 	Context context;
 	
+	private String fileSdcardPath;
+	
+	DatabaseHandler dataAds;
+
+	
 	public FileDownloader(Context context){
 		this.context = context;
+		dataAds = DatabaseHandler.getInstance();
+		dataAds.setContext(context);
 	}
 
 	@Override
@@ -53,9 +73,14 @@ public class FileDownloader extends AsyncTask<String, Void, String> {
 			              
 			        }
 			   
+			       
+			        fileSdcardPath = file.getAbsolutePath();
 			        fileOutput.close();
-			
-		
+			        
+			        dataAds.getInstance().getDatabaseManager().saveData(fileSdcardPath, pathUrl, 1.0f, 1.0f);
+			        
+			      
+		            		           
 				} catch (MalformedURLException e) {
 			        e.printStackTrace();
 				} catch (IOException e) {
@@ -70,7 +95,40 @@ public class FileDownloader extends AsyncTask<String, Void, String> {
 	@Override
 	protected void onPostExecute(String result) {
 		Toast.makeText(context, "File downloaded",Toast.LENGTH_SHORT).show();
+		adUpdate(); 
+		
 	}
+	
+	public String getFileSdcardPath(){
+		return this.fileSdcardPath;
+	}
+	
+	public void adUpdate(){	
+		
+		Thread thread = new Thread(new Runnable(){
+  	        @Override
+  	        public void run() { 
+  	            try {
+  	            
+  	            	File dir = Environment.getExternalStorageDirectory();
+  	            	File myFile = new File(dir, "ad_image.png");
+  	            	BitmapFactory.Options bitmapFatoryOptions=new BitmapFactory.Options();
+  	                bitmapFatoryOptions.inPreferredConfig=Bitmap.Config.RGB_565;
+  	                Bitmap myBitmap2 = BitmapFactory.decodeFile(myFile.getAbsolutePath(), bitmapFatoryOptions);
+  	                AdContentLoader.dynamicAdView.setImageBitmap(myBitmap2);
+  	                AdContentLoader.dynamicAdView.invalidate();
+  	            	
+  	            	 
+  	            } catch (Exception e) {
+  	                e.printStackTrace();
+  	            }
+  	        }
+  	    });
+  	 
+  	    thread.start();
+	
+	}
+	
 	
 }
 

@@ -46,13 +46,13 @@ public class DynamicAdView extends ImageView {
 	   super.onDraw(canvas);
 
 	   Paint myPaint = new Paint();
-	   if(AdMechanism.SHOWFLAG)
+	   if(AdContentLoader.SHOWFLAG)
 		   myPaint.setColor(Color.GREEN);
 	   else
 		   myPaint.setColor(Color.TRANSPARENT);
 	   myPaint.setStyle(Paint.Style.STROKE);
 	   myPaint.setStrokeWidth(3);
 
-	   	  }
+	  }
 	   
 }

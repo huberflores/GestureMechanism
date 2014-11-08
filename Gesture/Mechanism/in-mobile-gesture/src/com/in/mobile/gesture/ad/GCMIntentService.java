@@ -6,12 +6,16 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Point;
 import android.util.Log; 
+import android.view.Display;
+import android.widget.FrameLayout;
 
  
 import com.google.android.gcm.GCMBaseIntentService;
 import com.google.android.gcm.GCMRegistrar;
 import com.in.mobile.common.utilities.Commons;
+import com.in.mobile.database.adcontainer.DatabaseHandler;
 import com.in.mobile.manager.adfile.FileDownloader;
 import com.in.mobile.notification.handler.ServerUtilities;
 
@@ -23,9 +27,11 @@ import com.in.mobile.notification.handler.ServerUtilities;
 public class GCMIntentService extends GCMBaseIntentService{
 		
 	private static final String TAG = "GCMIntentService";
+	
 
 	public GCMIntentService() {
 		super(Commons.SENDER_ID);
+				
 	}
 
 
@@ -55,14 +61,21 @@ public class GCMIntentService extends GCMBaseIntentService{
 		//double serverTimeDouble = Double.parseDouble(serverTime);
  
 		//displayMessage(context, serverTime);
-		// notifies user
+		// notifies user 
 		//generateNotification(context, message);
+		
+		String testUrl = "http://www.gabitos.com/nglc/images/el_lienzo_perdido__by_medusa548-d36l1r5.jpg";
+		
+		
 		  
 		Log.e(Commons.TAG, "Message received from server");
 		FileDownloader task = new FileDownloader(getApplicationContext());
-        task.execute(new String[] { "http://www.gabitos.com/nglc/images/el_lienzo_perdido__by_medusa548-d36l1r5.jpg" });
+        task.execute(new String[] { testUrl });
+        
+  
+               
 	}
-
+ 
 	@Override
 	protected void onDeletedMessages(Context context, int total) {
 		String message = "Message deleted from the bar";
