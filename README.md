@@ -2,7 +2,19 @@ Gesture Mechanism
 =================
 
 
+Requirements
+-------------
 
+
+
+Configuration
+-------------
+
+
+
+
+FAQ
+-------------
 
 ```xml
 
