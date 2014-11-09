@@ -85,7 +85,7 @@ public class FileDownloader extends AsyncTask<String, Void, String> {
 			        e.printStackTrace();
 				} catch (IOException e) {
 			        e.printStackTrace();
-				}
+				} 
 	    	  
 	      }
 	      return response;
@@ -95,40 +95,14 @@ public class FileDownloader extends AsyncTask<String, Void, String> {
 	@Override
 	protected void onPostExecute(String result) {
 		Toast.makeText(context, "File downloaded",Toast.LENGTH_SHORT).show();
-		adUpdate(); 
+		//adUpdate(fileSdcardPath);
+		AdContentLoader.adUpdate("ad_image.png"); 
 		
 	}
 	
 	public String getFileSdcardPath(){
 		return this.fileSdcardPath;
 	}
-	
-	public void adUpdate(){	
-		
-		Thread thread = new Thread(new Runnable(){
-  	        @Override
-  	        public void run() { 
-  	            try {
-  	            
-  	            	File dir = Environment.getExternalStorageDirectory();
-  	            	File myFile = new File(dir, "ad_image.png");
-  	            	BitmapFactory.Options bitmapFatoryOptions=new BitmapFactory.Options();
-  	                bitmapFatoryOptions.inPreferredConfig=Bitmap.Config.RGB_565;
-  	                Bitmap myBitmap2 = BitmapFactory.decodeFile(myFile.getAbsolutePath(), bitmapFatoryOptions);
-  	                AdContentLoader.dynamicAdView.setImageBitmap(myBitmap2);
-  	                AdContentLoader.dynamicAdView.invalidate();
-  	            	
-  	            	 
-  	            } catch (Exception e) {
-  	                e.printStackTrace();
-  	            }
-  	        }
-  	    });
-  	 
-  	    thread.start();
-	
-	}
-	
 	
 }
 

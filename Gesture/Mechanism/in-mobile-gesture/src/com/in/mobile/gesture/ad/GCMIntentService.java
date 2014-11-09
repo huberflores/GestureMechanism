@@ -6,16 +6,12 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Point;
 import android.util.Log; 
-import android.view.Display;
-import android.widget.FrameLayout;
 
  
 import com.google.android.gcm.GCMBaseIntentService;
 import com.google.android.gcm.GCMRegistrar;
 import com.in.mobile.common.utilities.Commons;
-import com.in.mobile.database.adcontainer.DatabaseHandler;
 import com.in.mobile.manager.adfile.FileDownloader;
 import com.in.mobile.notification.handler.ServerUtilities;
 

@@ -12,6 +12,8 @@ package com.in.mobile.gesture.ad;
 
 import java.io.File;
 
+import com.in.mobile.database.adcontainer.DatabaseHandler;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -19,6 +21,8 @@ import android.graphics.Matrix;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.FloatMath;
 import android.util.Log;
 import android.view.Gravity;
@@ -33,9 +37,9 @@ import android.widget.ImageView.ScaleType;
 /*
  * author Huber Flores
  * in-mobile, 2014
- */
+ */ 
 
-public class AdContentLoader implements OnTouchListener{
+public class AdContentLoader implements OnTouchListener{ 
 
 	
 	private static final String TAG = "Touch";
@@ -64,10 +68,8 @@ public class AdContentLoader implements OnTouchListener{
 	
 
 	private Bitmap myBitmap;
-
-	private FrameLayout frameLayout;
-	private Context context;
 	
+	DatabaseHandler dataAds;
 	
 	public AdContentLoader(FrameLayout frameLayout, Point size, Context context){
 		SCREENWIDTH = size.x;
@@ -105,6 +107,9 @@ public class AdContentLoader implements OnTouchListener{
         dynamicAdView.setOnTouchListener(this);
         frameLayout.addView(dynamicAdView);
   
+        
+        dataAds = DatabaseHandler.getInstance();
+		dataAds.setContext(context);
         
 	}
 	
@@ -181,24 +186,50 @@ public class AdContentLoader implements OnTouchListener{
 		}
 		
 		   /** Determine the space between the first two fingers */
-		   private float spacing(WrapMotionEvent event) {
+	  private float spacing(WrapMotionEvent event) {
 		      // ...
-		      float x = event.getX(0) - event.getX(1);
-		      float y = event.getY(0) - event.getY(1);
-		      return FloatMath.sqrt(x * x + y * y);
-		   }
+	      float x = event.getX(0) - event.getX(1);
+	      float y = event.getY(0) - event.getY(1);
+	      return FloatMath.sqrt(x * x + y * y);
+	  }
 
 		   /** Calculate the mid point of the first two fingers */
-		   private void midPoint(PointF point, WrapMotionEvent event) {
+	   private void midPoint(PointF point, WrapMotionEvent event) {
 		      // ...
-		      float x = event.getX(0) + event.getX(1);
-		      float y = event.getY(0) + event.getY(1);
-		      point.set(x / 2, y / 2);
-		   }
+	      float x = event.getX(0) + event.getX(1);
+	      float y = event.getY(0) + event.getY(1);
+	      point.set(x / 2, y / 2);
+	   } 
+ 
+	   
+	   public static void adUpdate(final String fileName) {
+		   
+		   Handler handler = new Handler(Looper.getMainLooper());
+		   handler.post(new Runnable() {
+		        public void run() {
+		        	//UI code
+		        	File dir = Environment.getExternalStorageDirectory();
+  	            	File myFile = new File(dir, fileName);
+  	            	BitmapFactory.Options bitmapFatoryOptions=new BitmapFactory.Options();
+  	                bitmapFatoryOptions.inPreferredConfig=Bitmap.Config.RGB_565;
+  	                Bitmap myBitmap2 = BitmapFactory.decodeFile(myFile.getAbsolutePath(), bitmapFatoryOptions);
+  	                dynamicAdView.setImageBitmap(myBitmap2);
+  	                dynamicAdView.invalidate();
+		        }
+		   });
 
+		}
 
-	
-	
-	
-	
+	   
+	 //Mising database query
+		public void adUpdate(int adIdentifier){	
+			final String adFilePath = dataAds.getInstance().getDatabaseManager().getAdFilePath(adIdentifier);
+			
+			if (adFilePath!=null){
+				adUpdate(adFilePath);	
+			}
+		
+		}
+		
+
 }

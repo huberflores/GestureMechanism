@@ -43,10 +43,19 @@ public class DatabaseManager {
 		dbUri = dContext.getContentResolver().insert(AdContentProvider.CONTENT_URI, values);
 		
 	 }
-	
 	public void setDbUri(Uri cursor){
 		this.dbUri = cursor;
 	}
+	
+	public String getAdFilePath(int adIdentifier){
+		/*
+		 * TODO database query
+		 */
+		
+		
+		return "";
+	}
+	
 
 
 }

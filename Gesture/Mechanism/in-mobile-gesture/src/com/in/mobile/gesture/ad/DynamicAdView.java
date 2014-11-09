@@ -1,5 +1,8 @@
 package com.in.mobile.gesture.ad;
 
+import java.io.File;
+
+import android.util.Log;
 import android.widget.ImageView;
 
 import android.content.Context;
@@ -12,9 +15,13 @@ import android.graphics.Paint;
 import android.graphics.PointF;
 import android.media.FaceDetector;
 import android.media.FaceDetector.Face;
+import android.os.Environment;
 import android.widget.ImageView;
 
 public class DynamicAdView extends ImageView {
+	
+	private static final String TAG = "DynamicAd";
+	
 	private int imageWidth, imageHeight;
 	
 	
@@ -32,7 +39,7 @@ public class DynamicAdView extends ImageView {
 	    float scaleWidth = ((float) newWidth) / width;
 	    float scaleHeight = ((float) newHeight) / height;
 	    // CREATE A MATRIX FOR THE MANIPULATION
-	    Matrix matrix = new Matrix();
+	    Matrix matrix = new Matrix(); 
 	    // RESIZE THE BIT MAP
 	    matrix.postScale(scaleWidth, scaleHeight);
 
@@ -46,13 +53,18 @@ public class DynamicAdView extends ImageView {
 	   super.onDraw(canvas);
 
 	   Paint myPaint = new Paint();
-	   if(AdContentLoader.SHOWFLAG)
-		   myPaint.setColor(Color.GREEN);
-	   else
-		   myPaint.setColor(Color.TRANSPARENT);
-	   myPaint.setStyle(Paint.Style.STROKE);
-	   myPaint.setStrokeWidth(3);
+	   if(AdContentLoader.SHOWFLAG){
+		   Log.i(TAG, "long ad");
+		  AdContentLoader.adUpdate("LongAd.jpeg");
+	   
+	   
+	   }
+	   else{
+		   Log.i(TAG, "small ad");
 
+	   }	   
 	  }
+	 
+	 
 	   
 }
