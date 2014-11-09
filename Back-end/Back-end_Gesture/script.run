@@ -1,0 +1,5 @@
+scp -i /home/huber/...KeyPath.../HuberFlores/pk-huber_key.pem -r ./Back-end_Gesture.war ubuntu@ec2-xx-xxx-x-x.compute-1.amazonaws.com:/home/ubuntu/
+
+ssh -i /home/huber/...KeyPath.../HuberFlores/pk-huber_key.pem ubuntu@ec2-xx-xxx-x-x.compute-1.amazonaws.com
+
+
