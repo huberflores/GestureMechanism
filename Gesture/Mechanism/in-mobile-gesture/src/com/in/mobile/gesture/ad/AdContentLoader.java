@@ -40,7 +40,7 @@ import android.widget.ImageView.ScaleType;
  */ 
 
 public class AdContentLoader implements OnTouchListener{ 
-
+ 
 	
 	private static final String TAG = "Touch";
 	
