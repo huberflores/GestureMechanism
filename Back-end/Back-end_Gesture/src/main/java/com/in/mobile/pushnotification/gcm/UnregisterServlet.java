@@ -28,16 +28,15 @@ import javax.servlet.http.HttpServletResponse;
  * {@code unregistered} extra.
  */
 @SuppressWarnings("serial")
-public class UnregisterServlet extends BaseServlet { 
+public class UnregisterServlet extends BaseServlet {
 
-  private static final String PARAMETER_REG_ID = "regId";
+	private static final String PARAMETER_REG_ID = "regId";
 
-  @Override
-  protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-      throws ServletException {
-    String regId = getParameter(req, PARAMETER_REG_ID);
-    Datastore.unregister(regId);
-    setSuccess(resp);
-  }
-
+	@Override
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+			throws ServletException {
+		String regId = getParameter(req, PARAMETER_REG_ID);
+		Datastore.unregister(regId);
+		setSuccess(resp);
+	}
 }

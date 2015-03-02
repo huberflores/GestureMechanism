@@ -25,41 +25,42 @@ import java.util.logging.Logger;
  * This class is neither persistent (it will lost the data when the app is
  * restarted) nor thread safe.
  */
-public final class Datastore { 
+public final class Datastore {
 
-  private static final List<String> regIds = new ArrayList<String>();
-  private static final Logger logger =
-      Logger.getLogger(Datastore.class.getName());
+	private static final List<String> regIds = new ArrayList<String>();
+	private static final Logger logger = Logger.getLogger(Datastore.class
+			.getName());
 
-  private Datastore() {
-    throw new UnsupportedOperationException();
-  }
+	private Datastore() {
+		throw new UnsupportedOperationException();
+	}
 
-  /**
-   * Registers a device.
-   *
-   * @param regId device's registration id.
-   */
-  public static void register(String regId) {
-    logger.info("Registering " + regId);
-    regIds.add(regId);
-  }
+	/**
+	 * Registers a device.
+	 * 
+	 * @param regId
+	 *            device's registration id.
+	 */
+	public static void register(String regId) {
+		logger.info("Registering " + regId);
+		regIds.add(regId);
+	}
 
-  /**
-   * Unregisters a device.
-   *
-   * @param regId device's registration id.
-   */
-  public static void unregister(String regId) {
-    logger.info("Unregistering " + regId);
-    regIds.remove(regId);
-  }
+	/**
+	 * Unregisters a device.
+	 * 
+	 * @param regId
+	 *            device's registration id.
+	 */
+	public static void unregister(String regId) {
+		logger.info("Unregistering " + regId);
+		regIds.remove(regId);
+	}
 
-  /**
-   * Gets all registered devices.
-   */
-  public static List<String> getDevices() {
-    return regIds;
-  }
-
+	/**
+	 * Gets all registered devices.
+	 */
+	public static List<String> getDevices() {
+		return regIds;
+	}
 }
