@@ -16,13 +16,13 @@ import com.in.mobile.database.adcontainer.DatabaseHandler;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.FloatMath;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -56,11 +56,6 @@ public class AdContentLoader implements OnTouchListener {
 	float resizeWidth;
 	float resizeHeight;
 
-	static final int NONE = 0;
-	static final int DRAG = 1;
-	static final int ZOOM = 2;
-	int mode = NONE;
-
 	PointF start = new PointF();
 	PointF mid = new PointF();
 	float oldDist = 1f;
@@ -79,37 +74,14 @@ public class AdContentLoader implements OnTouchListener {
 		matrix.setTranslate(1f, 1f);
 		matrix.setScale(0.1f, 0.1f);
 
-		dynamicAdView = new DynamicAdView(context, SCREENWIDTH, SCREENHEIGHT);
+		dynamicAdView = new DynamicAdView(context, 200, 200, SCREENWIDTH,
+				SCREENHEIGHT, "ad.jpg", Color.rgb(255, 0, 0));
+//		dynamicAdView.setOnTouchListener(this);
 
-		File dir = Environment.getExternalStorageDirectory();
-
-		File myFile = new File(dir, "ad.jpg");
-
-		if (myFile.exists()) {
-			BitmapFactory.Options bitmapFatoryOptions = new BitmapFactory.Options();
-			bitmapFatoryOptions.inPreferredConfig = Bitmap.Config.RGB_565;
-			myBitmap = BitmapFactory.decodeFile(myFile.getAbsolutePath(),
-					bitmapFatoryOptions);
-
-			dynamicAdView.setImageBitmap(myBitmap);
-
-		} else {
-			// default
-			dynamicAdView.setImageResource(R.drawable.ad_image);
-		}
-
-		dynamicAdView.setScaleType(ScaleType.MATRIX);
-		dynamicAdView.setImageMatrix(matrix);
-		FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
-				LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-		params.gravity = Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL;
-		dynamicAdView.setLayoutParams(params);
-		dynamicAdView.setOnTouchListener(this);
 		frameLayout.addView(dynamicAdView);
 
 		dataAds = DatabaseHandler.getInstance();
 		dataAds.setContext(context);
-
 	}
 
 	@Override
@@ -122,129 +94,14 @@ public class AdContentLoader implements OnTouchListener {
 		IMAGEWIDTH = dynamicAdView.getWidth();
 
 		switch (event.getAction() & MotionEvent.ACTION_MASK) {
-		case MotionEvent.ACTION_DOWN:
-			savedMatrix.set(matrix);
 
-			start.set(event.getX(), event.getY());
-
-			mode = DRAG;
-
-			Log.d(TAG, "mode=DRAG");
-
-			break;
-		case MotionEvent.ACTION_POINTER_DOWN:
-			oldDist = spacing(event);
-
-			Log.d(TAG, "oldDist=" + oldDist);
-
-			if (oldDist > 10f) {
-				savedMatrix.set(matrix);
-
-				midPoint(mid, event);
-
-				mode = ZOOM;
-
-				Log.d(TAG, "mode=ZOOM");
-			}
-
-			break;
-		case MotionEvent.ACTION_UP:
-		case MotionEvent.ACTION_POINTER_UP:
-			mode = NONE;
-
-			Log.d(TAG, "mode=NONE");
-
-			break;
 		case MotionEvent.ACTION_MOVE:
-			if (mode == DRAG) {
-				matrix.set(savedMatrix);
-
-				matrix.postTranslate(event.getX() - start.x, event.getY()
-						- start.y);
-			} else if (mode == ZOOM) {
-				float newDist = spacing(event);
-
-				Log.d(TAG, "newDist = " + newDist);
-
-				if (newDist > 10f) {
-					matrix.set(savedMatrix);
-					float scale = newDist / oldDist;
-					matrix.postScale(scale, scale, mid.x, mid.y);
-				}
-			}
+			
 
 			break;
-		}
-
-		CalculateResizeSize(matrix);
-
-		if (SHOULDUPDATEIMAGE) {
-			view.setImageMatrix(matrix);
 		}
 
 		return true;
-	}
-
-	private void CalculateResizeSize(Matrix mMatrix) {
-		float[] values = new float[9];
-		mMatrix.getValues(values);
-
-		newX = values[Matrix.MTRANS_X];
-		newY = values[Matrix.MTRANS_Y];
-		resizeWidth = values[Matrix.MSCALE_X] * IMAGEWIDTH;
-		resizeHeight = values[Matrix.MSCALE_Y] * IMAGEHEIGHT;
-
-		if (resizeWidth > SCREENWIDTH) {
-			SHOWFLAG = true;
-		} else {
-			SHOWFLAG = false;
-		}
-
-		if (resizeWidth > SCREENWIDTH) {
-			Log.e(TAG, "Width bigger than screen");
-			SHOULDUPDATEIMAGE = false;
-		} else if (resizeHeight > SCREENHEIGHT) {
-			Log.e(TAG, "Height bigger than screen");
-			SHOULDUPDATEIMAGE = false;
-		} else if (newX < 0) {
-			Log.e(TAG, "X < 0");
-			SHOULDUPDATEIMAGE = false;
-		} else if (newX + resizeWidth > SCREENWIDTH) {
-			Log.e(TAG, "X > screen");
-			SHOULDUPDATEIMAGE = false;
-		} else if (newY < 0) {
-			//TODO remove later for swipe left
-			Log.e(TAG, "Y < 0");
-			SHOULDUPDATEIMAGE = false;
-		} else if (newY + resizeHeight > SCREENHEIGHT) {
-			//TODO remove later for swipe right
-			Log.e(TAG, "Y > screen");
-			SHOULDUPDATEIMAGE = false;
-		} else {
-			Log.i(TAG, "Action OK");
-			SHOULDUPDATEIMAGE = true;
-		}
-
-		Log.e(TAG, String.valueOf(newY) + " - " + String.valueOf(resizeHeight)
-				+ " - " + String.valueOf(SCREENHEIGHT));
-
-		// Log.e("TAG", "X = " + resizeWidth + "; Y = " + resizeHeight);
-	}
-
-	/** Determine the space between the first two fingers */
-	private float spacing(WrapMotionEvent event) {
-		// ...
-		float x = event.getX(0) - event.getX(1);
-		float y = event.getY(0) - event.getY(1);
-		return FloatMath.sqrt(x * x + y * y);
-	}
-
-	/** Calculate the mid point of the first two fingers */
-	private void midPoint(PointF point, WrapMotionEvent event) {
-		// ...
-		float x = event.getX(0) + event.getX(1);
-		float y = event.getY(0) + event.getY(1);
-		point.set(x / 2, y / 2);
 	}
 
 	public static void adUpdate(final String fileName) {
@@ -255,12 +112,13 @@ public class AdContentLoader implements OnTouchListener {
 				// UI code
 				File dir = Environment.getExternalStorageDirectory();
 				File myFile = new File(dir, fileName);
+				
 				BitmapFactory.Options bitmapFatoryOptions = new BitmapFactory.Options();
 				bitmapFatoryOptions.inPreferredConfig = Bitmap.Config.RGB_565;
 				Bitmap myBitmap2 = BitmapFactory.decodeFile(
 						myFile.getAbsolutePath(), bitmapFatoryOptions);
-				dynamicAdView.setImageBitmap(myBitmap2);
-				dynamicAdView.invalidate();
+				
+				dynamicAdView.UpdateImage(myBitmap2);
 			}
 		});
 
