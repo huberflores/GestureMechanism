@@ -40,15 +40,19 @@ import android.widget.ImageView.ScaleType;
 
 public class AdContentLoader implements OnTouchListener {
 
-	private static final String TAG = "Touch";
-
-	Matrix matrix = new Matrix();
-	Matrix savedMatrix = new Matrix();
+	private static final String TAG = "AdContentLoader";
+	private static boolean SHOULDUPDATEIMAGE;
 	public static float IMAGEHEIGHT;
 	public static float IMAGEWIDTH;
 	public static int SCREENWIDTH;
 	public static int SCREENHEIGHT;
 	public static boolean SHOWFLAG = false;
+
+	Matrix matrix = new Matrix();
+	Matrix savedMatrix = new Matrix();
+
+	float newX;
+	float newY;
 	float resizeWidth;
 	float resizeHeight;
 
@@ -110,71 +114,121 @@ public class AdContentLoader implements OnTouchListener {
 
 	@Override
 	public boolean onTouch(View v, MotionEvent rawEvent) {
-		// TODO Auto-generated method stub
 		WrapMotionEvent event = WrapMotionEvent.wrap(rawEvent);
-		// ...
+
 		DynamicAdView view = (DynamicAdView) v;
 
 		IMAGEHEIGHT = dynamicAdView.getHeight();
 		IMAGEWIDTH = dynamicAdView.getWidth();
 
-		// Handle touch events here...
 		switch (event.getAction() & MotionEvent.ACTION_MASK) {
 		case MotionEvent.ACTION_DOWN:
 			savedMatrix.set(matrix);
+
 			start.set(event.getX(), event.getY());
-			Log.d(TAG, "mode=DRAG");
+
 			mode = DRAG;
+
+			Log.d(TAG, "mode=DRAG");
+
 			break;
 		case MotionEvent.ACTION_POINTER_DOWN:
 			oldDist = spacing(event);
+
 			Log.d(TAG, "oldDist=" + oldDist);
+
 			if (oldDist > 10f) {
 				savedMatrix.set(matrix);
+
 				midPoint(mid, event);
+
 				mode = ZOOM;
+
 				Log.d(TAG, "mode=ZOOM");
 			}
+
 			break;
 		case MotionEvent.ACTION_UP:
 		case MotionEvent.ACTION_POINTER_UP:
 			mode = NONE;
+
 			Log.d(TAG, "mode=NONE");
+
 			break;
 		case MotionEvent.ACTION_MOVE:
 			if (mode == DRAG) {
-				// ...
 				matrix.set(savedMatrix);
+
 				matrix.postTranslate(event.getX() - start.x, event.getY()
 						- start.y);
 			} else if (mode == ZOOM) {
 				float newDist = spacing(event);
-				Log.d(TAG, "newDist=" + newDist);
+
+				Log.d(TAG, "newDist = " + newDist);
+
 				if (newDist > 10f) {
 					matrix.set(savedMatrix);
 					float scale = newDist / oldDist;
 					matrix.postScale(scale, scale, mid.x, mid.y);
 				}
 			}
+
 			break;
 		}
 
-		view.setImageMatrix(matrix);
 		CalculateResizeSize(matrix);
-		return true; // indicate event was handled
+
+		if (SHOULDUPDATEIMAGE) {
+			view.setImageMatrix(matrix);
+		}
+
+		return true;
 	}
 
 	private void CalculateResizeSize(Matrix mMatrix) {
 		float[] values = new float[9];
 		mMatrix.getValues(values);
+
+		newX = values[Matrix.MTRANS_X];
+		newY = values[Matrix.MTRANS_Y];
 		resizeWidth = values[Matrix.MSCALE_X] * IMAGEWIDTH;
 		resizeHeight = values[Matrix.MSCALE_Y] * IMAGEHEIGHT;
+
 		if (resizeWidth > SCREENWIDTH) {
 			SHOWFLAG = true;
 		} else {
 			SHOWFLAG = false;
 		}
-		Log.e("TAG", "X " + resizeWidth + "Y  " + resizeHeight);
+
+		if (resizeWidth > SCREENWIDTH) {
+			Log.e(TAG, "Width bigger than screen");
+			SHOULDUPDATEIMAGE = false;
+		} else if (resizeHeight > SCREENHEIGHT) {
+			Log.e(TAG, "Height bigger than screen");
+			SHOULDUPDATEIMAGE = false;
+		} else if (newX < 0) {
+			Log.e(TAG, "X < 0");
+			SHOULDUPDATEIMAGE = false;
+		} else if (newX + resizeWidth > SCREENWIDTH) {
+			Log.e(TAG, "X > screen");
+			SHOULDUPDATEIMAGE = false;
+		} else if (newY < 0) {
+			//TODO remove later for swipe left
+			Log.e(TAG, "Y < 0");
+			SHOULDUPDATEIMAGE = false;
+		} else if (newY + resizeHeight > SCREENHEIGHT) {
+			//TODO remove later for swipe right
+			Log.e(TAG, "Y > screen");
+			SHOULDUPDATEIMAGE = false;
+		} else {
+			Log.i(TAG, "Action OK");
+			SHOULDUPDATEIMAGE = true;
+		}
+
+		Log.e(TAG, String.valueOf(newY) + " - " + String.valueOf(resizeHeight)
+				+ " - " + String.valueOf(SCREENHEIGHT));
+
+		// Log.e("TAG", "X = " + resizeWidth + "; Y = " + resizeHeight);
 	}
 
 	/** Determine the space between the first two fingers */
@@ -220,6 +274,5 @@ public class AdContentLoader implements OnTouchListener {
 		if (adFilePath != null) {
 			adUpdate(adFilePath);
 		}
-
 	}
 }

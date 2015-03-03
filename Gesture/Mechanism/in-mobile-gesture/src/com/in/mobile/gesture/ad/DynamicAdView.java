@@ -25,10 +25,11 @@ public class DynamicAdView extends ImageView {
 	private int imageWidth, imageHeight;
 
 	public DynamicAdView(Context context, int width, int height) {
+		
 		super(context);
+		
 		imageWidth = width;
 		imageHeight = height;
-
 	}
 
 	public Bitmap getResizedBitmap(Bitmap bm, int newHeight, int newWidth) {
@@ -49,16 +50,16 @@ public class DynamicAdView extends ImageView {
 
 	@Override
 	protected void onDraw(Canvas canvas) {
+
 		super.onDraw(canvas);
 
 		Paint myPaint = new Paint();
+
 		if (AdContentLoader.SHOWFLAG) {
 			Log.i(TAG, "long ad");
 			AdContentLoader.adUpdate("LongAd.jpeg");
-
 		} else {
 			Log.i(TAG, "small ad");
-
 		}
 	}
 }
