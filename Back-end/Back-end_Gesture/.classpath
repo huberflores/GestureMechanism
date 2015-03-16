@@ -22,7 +22,7 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/Applications/adt-bundle-mac-x86_64-20140702/sdk/extras/google/gcm/gcm-server/dist/gcm-server.jar"/>
-	<classpathentry kind="lib" path="/Users/jaan/Downloads/apache-tomcat-7.0.59/lib/servlet-api.jar"/>
+	<classpathentry kind="lib" path="libs/gcm-server.jar"/>
+	<classpathentry kind="lib" path="libs/servlet-api.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
