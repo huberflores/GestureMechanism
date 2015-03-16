@@ -1,25 +1,34 @@
-*.pydevproject
-.metadata
-.gradle
-bin/
-tmp/
 *.tmp
 *.bak
 *.swp
+*.apk
+*.ap_
+*.dex
+*.log
 *~.nib
-local.properties
-.settings/
-.loadpath
-# External tool builders
-.externalToolBuilders/
-# Locally stored "Eclipse launch configurations"
+*.class
+*.gradle
 *.launch
-# CDT-specific
-.cproject
-# PDT-specific
-.buildpath
-# sbteclipse plugin
-.target
-# TeXlipse plugin
-.texlipse
+*.target
+*.loadpath
+*.cproject
+*.metadata
+*.texlipse
+*.buildpath'
+*.pydevproject
 
+.classpath
+
+R.java
+local.properties
+project.properties
+
+bin/
+gen/
+tmp/
+build/
+gradle/
+proguard/
+externalToolBuilders/
+
+.settings/
