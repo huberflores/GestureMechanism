@@ -40,7 +40,6 @@ public class DatabaseManager {
 
 		dbUri = dContext.getContentResolver().insert(
 				AdContentProvider.CONTENT_URI, values);
-
 	}
 
 	public void setDbUri(Uri cursor) {

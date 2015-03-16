@@ -121,7 +121,6 @@ public class AdContentLoader implements OnTouchListener {
 				dynamicAdView.UpdateImage(myBitmap2);
 			}
 		});
-
 	}
 
 	// Mising database query
