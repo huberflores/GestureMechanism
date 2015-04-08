@@ -24,6 +24,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Environment;
+import android.util.Log;
 import android.widget.Toast;
 
 /*
@@ -47,10 +48,16 @@ public class FileDownloader extends AsyncTask<String, Void, String> {
 
 	@Override
 	protected String doInBackground(String... urls) {
+		Log.e("FileDownloader", "doInBackground called");
 		String response = "";
 		for (String pathUrl : urls) {
-			try {
+			if (pathUrl != null) {
+				Log.e("FileDownloader", pathUrl);
+			} else {
+				Log.e("FileDownloader", "pathUrl is null");
+			}
 
+			try {
 				URL url = new URL(pathUrl);
 				HttpURLConnection urlConnection = (HttpURLConnection) url
 						.openConnection();
@@ -69,7 +76,6 @@ public class FileDownloader extends AsyncTask<String, Void, String> {
 
 				while ((bufferLength = inputStream.read(buffer)) > 0) {
 					fileOutput.write(buffer, 0, bufferLength);
-
 				}
 
 				fileSdcardPath = file.getAbsolutePath();
@@ -77,23 +83,21 @@ public class FileDownloader extends AsyncTask<String, Void, String> {
 
 				dataAds.getInstance().getDatabaseManager()
 						.saveData(fileSdcardPath, pathUrl, 1.0f, 1.0f);
-
 			} catch (MalformedURLException e) {
-				e.printStackTrace();
+				Log.e("FileDownloader", e.toString());
 			} catch (IOException e) {
-				e.printStackTrace();
+				Log.e("FileDownloader", e.toString());
 			}
-
 		}
+
 		return response;
 	}
 
 	@Override
 	protected void onPostExecute(String result) {
 		Toast.makeText(context, "File downloaded", Toast.LENGTH_SHORT).show();
-		// adUpdate(fileSdcardPath);
-		AdContentLoader.adUpdate("ad_image.png");
-
+		AdContentLoader.adUpdate(fileSdcardPath);
+		// AdContentLoader.adUpdate("ad_image.png");
 	}
 
 	public String getFileSdcardPath() {

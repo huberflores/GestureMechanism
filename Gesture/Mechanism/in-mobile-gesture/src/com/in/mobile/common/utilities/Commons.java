@@ -12,7 +12,7 @@ public class Commons {
 	// "http://192.168.1.78:8080/GCM-mavenized-server";
 	
 	public static final String SENDER_ID = "431447948280";
-	public static final String SERVER_URL = "http://192.168.1.243:8080/Back-end_Gesture";
+	public static final String SERVER_URL = "http://192.168.1.153:8080/Back-end_Gesture";
 
 	public static final String DISPLAY_MESSAGE_ACTION = "com.in.mobile.gesture.ad.DISPLAY_MESSAGE";
 	public static final String EXTRA_MESSAGE = "message";

@@ -13,8 +13,17 @@
 package com.in.mobile.gesture.ad;
 
 import java.io.File;
+import java.io.IOException;
+
+import com.google.android.gcm.GCMRegistrar;
+import com.in.mobile.common.utilities.Commons;
+import com.in.mobile.database.adcontainer.DatabaseCommons;
 import com.in.mobile.database.adcontainer.DatabaseHandler;
+import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -24,6 +33,7 @@ import android.graphics.PointF;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
@@ -32,13 +42,13 @@ import android.widget.ImageView;
 
 public class AdContentLoader implements OnTouchListener {
 
-	private static final String TAG = "AdContentLoader";
-	private static boolean SHOULDUPDATEIMAGE;
 	public static float IMAGEHEIGHT;
 	public static float IMAGEWIDTH;
 	public static int SCREENWIDTH;
 	public static int SCREENHEIGHT;
 	public static boolean SHOWFLAG = false;
+
+	Activity activity;
 
 	Matrix matrix = new Matrix();
 	Matrix savedMatrix = new Matrix();
@@ -55,11 +65,30 @@ public class AdContentLoader implements OnTouchListener {
 	public static DynamicAdView dynamicAdView;
 	ImageView imageView;
 
-	private Bitmap myBitmap;
-
 	DatabaseHandler dataAds;
+	
+	private final BroadcastReceiver mHandleMessageReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			String newMessage = intent.getExtras().getString(
+					Commons.EXTRA_MESSAGE);
 
-	public AdContentLoader(FrameLayout frameLayout, Point size, Context context) {
+		}
+	};
+
+	public AdContentLoader(Activity context) {
+
+		activity = context;
+
+		GCMRegistrar.checkManifest(activity);
+
+		Point size = new Point();
+
+		activity.getWindowManager().getDefaultDisplay().getSize(size);
+
+		FrameLayout frameLayout = (FrameLayout) activity.getWindow()
+				.getDecorView().findViewById(android.R.id.content);
+
 		SCREENWIDTH = size.x;
 		SCREENHEIGHT = size.y;
 
@@ -68,12 +97,28 @@ public class AdContentLoader implements OnTouchListener {
 
 		dynamicAdView = new DynamicAdView(context, 200, 200, SCREENWIDTH,
 				SCREENHEIGHT, "ad.jpg", Color.rgb(255, 0, 0));
-//		dynamicAdView.setOnTouchListener(this);
 
 		frameLayout.addView(dynamicAdView);
 
 		dataAds = DatabaseHandler.getInstance();
 		dataAds.setContext(context);
+		
+		activity.registerReceiver(mHandleMessageReceiver, new IntentFilter(
+				Commons.DISPLAY_MESSAGE_ACTION));
+
+		Thread thread = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					GCMRegistrar.register(activity.getApplicationContext(),
+							Commons.SENDER_ID);
+				} catch (Exception e) {
+					Log.e("AdMechanism - onCreate", e.toString());
+				}
+			}
+		});
+
+		thread.start();
 	}
 
 	@Override
@@ -88,12 +133,21 @@ public class AdContentLoader implements OnTouchListener {
 		switch (event.getAction() & MotionEvent.ACTION_MASK) {
 
 		case MotionEvent.ACTION_MOVE:
-			
 
 			break;
 		}
 
 		return true;
+	}
+
+	public void onPause() {
+		GCMRegistrar.unregister(activity);
+	}
+
+	public void destroy() {
+		activity.unregisterReceiver(mHandleMessageReceiver);
+
+		GCMRegistrar.onDestroy(activity);
 	}
 
 	public static void adUpdate(final String fileName) {
@@ -104,16 +158,15 @@ public class AdContentLoader implements OnTouchListener {
 				// UI code
 				File dir = Environment.getExternalStorageDirectory();
 				File myFile = new File(dir, fileName);
-				
+
 				BitmapFactory.Options bitmapFatoryOptions = new BitmapFactory.Options();
 				bitmapFatoryOptions.inPreferredConfig = Bitmap.Config.RGB_565;
 				Bitmap myBitmap2 = BitmapFactory.decodeFile(
 						myFile.getAbsolutePath(), bitmapFatoryOptions);
-				
+
 				dynamicAdView.UpdateImage(myBitmap2);
 			}
 		});
-
 	}
 
 	// Mising database query
@@ -123,6 +176,14 @@ public class AdContentLoader implements OnTouchListener {
 
 		if (adFilePath != null) {
 			adUpdate(adFilePath);
+		}
+	}
+	
+	public void extractDatabaseFile(DatabaseCommons db) {
+		try {
+			db.copyDatabaseFile();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 }

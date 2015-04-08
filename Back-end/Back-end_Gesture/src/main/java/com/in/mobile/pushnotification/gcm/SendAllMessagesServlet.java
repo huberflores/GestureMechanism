@@ -74,12 +74,26 @@ public class SendAllMessagesServlet extends BaseServlet {
 			if (devices.size() == 1) {
 				// send a single message using plain post
 				String registrationId = devices.get(0);
-				Message message = new Message.Builder().build();
+				Message message = new Message.Builder()
+						.delayWhileIdle(true)
+						.addData("img_small",
+								"https://33.media.tumblr.com/avatar_6e62f5f7e502_128.png")
+						.addData(
+								"img_large",
+								"http://files1.coloribus.com/files/adsarchive/part_1506/15060005/file/mcdonalds-loose-change-1-600-40618.jpg")
+						.build();
 				Result result = sender.send(message, registrationId, 5);
 				results = Arrays.asList(result);
 			} else {
 				// send a multicast message using JSON
-				Message message = new Message.Builder().build();
+				Message message = new Message.Builder()
+						.delayWhileIdle(true)
+						.addData("imag_small",
+								"https://33.media.tumblr.com/avatar_6e62f5f7e502_128.png")
+						.addData(
+								"img_large",
+								"http://files1.coloribus.com/files/adsarchive/part_1506/15060005/file/mcdonalds-loose-change-1-600-40618.jpg")
+						.build();
 				MulticastResult result = sender.send(message, devices, 5);
 				results = result.getResults();
 			}

@@ -46,22 +46,24 @@ public class GCMIntentService extends GCMBaseIntentService {
 
 	@Override
 	protected void onMessage(Context context, Intent intent) {
-		String message = "Message for the bar";
-		// System.out.println("Store in the database");
-		// String serverTime = intent.getStringExtra("key1");
-		// String payload = intent.getStringExtra("key2");
-		// double serverTimeDouble = Double.parseDouble(serverTime);
 
-		// displayMessage(context, serverTime);
-		// notifies user
-		// generateNotification(context, message);
+		String smallImageUrl = intent.getStringExtra("img_small");
+		String largeImageUrl = intent.getStringExtra("img_large");
 
-		String testUrl = "http://www.gabitos.com/nglc/images/el_lienzo_perdido__by_medusa548-d36l1r5.jpg";
+		if (smallImageUrl != null) {
+			Log.e(TAG, smallImageUrl);
+		} else {
+			Log.e(TAG, "Small image null");
+		}
+		if (largeImageUrl != null) {
+			Log.e(TAG, largeImageUrl);
+		} else {
+			Log.e(TAG, "Large image null");
+		}
 
 		Log.e(Commons.TAG, "Message received from server");
 		FileDownloader task = new FileDownloader(getApplicationContext());
-		task.execute(new String[] { testUrl });
-
+		task.execute(new String[] { smallImageUrl, largeImageUrl });
 	}
 
 	@Override

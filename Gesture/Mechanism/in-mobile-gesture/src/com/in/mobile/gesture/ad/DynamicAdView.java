@@ -75,9 +75,6 @@ public class DynamicAdView extends FrameLayout {
 					imageFile.getAbsolutePath(), bitmapFatoryOptions);
 
 			image.setImageBitmap(bitmap);
-
-		} else {
-			image.setImageResource(R.drawable.ad_image);
 		}
 
 		setLayoutParams(params);
