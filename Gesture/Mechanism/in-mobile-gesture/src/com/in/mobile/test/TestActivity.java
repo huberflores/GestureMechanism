@@ -5,16 +5,19 @@
  * GNU General Public License for more details.
  *
  * Please send inquiries to huber AT ut DOT ee
+ *
+ * author Huber Flores
+ * in-mobile, 2014
  */
 
-package com.in.mobile.gesture.ad;
+package com.in.mobile.test;
 
 import java.io.IOException;
-
 import com.in.mobile.common.utilities.Commons;
 import com.in.mobile.database.adcontainer.DatabaseCommons;
+import com.in.mobile.gesture.ad.AdContentLoader;
+import com.in.mobile.gesture.ad.R;
 import com.google.android.gcm.GCMRegistrar;
-
 import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -32,31 +35,20 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Point;
 
-/*
- * author Huber Flores
- * in-mobile, 2014
- */
-
-public class AdMechanism extends ActionBarActivity {
-
-	private static final String TAG = "Touch";
+public class TestActivity extends ActionBarActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_ad_mechanism);
 
-		if (savedInstanceState == null) {
-			getSupportFragmentManager().beginTransaction()
-					.add(R.id.container, new PlaceholderFragment()).commit();
-		}
+		setContentView(R.layout.activity_test);
 
-		FrameLayout frameLayout = (FrameLayout) findViewById(R.id.frameLayout);
 		Display display = getWindowManager().getDefaultDisplay();
 		Point size = new Point();
 		display.getSize(size);
 
-		new AdContentLoader(frameLayout, size, this);
+		new AdContentLoader((FrameLayout) getWindow().getDecorView()
+				.findViewById(android.R.id.content), size, this);
 
 		GCMRegistrar.checkManifest(this);
 
@@ -76,16 +68,12 @@ public class AdMechanism extends ActionBarActivity {
 		});
 
 		thread.start();
-
-		// extract to sdcard
-		// extractDatabaseFile(new DatabaseCommons());
-
 	}
 
 	@Override
 	protected void onPause() {
 		super.onPause();
-		
+
 		GCMRegistrar.unregister(this);
 	}
 
@@ -94,6 +82,7 @@ public class AdMechanism extends ActionBarActivity {
 		super.onDestroy();
 
 		unregisterReceiver(mHandleMessageReceiver);
+
 		GCMRegistrar.onDestroy(this);
 	}
 
@@ -111,44 +100,6 @@ public class AdMechanism extends ActionBarActivity {
 			db.copyDatabaseFile();
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
-	}
-
-	/* Support to other Android platforms start */
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.ad_mechanism, menu);
-		return true;
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
-		int id = item.getItemId();
-		if (id == R.id.action_settings) {
-			return true;
-		}
-		return super.onOptionsItemSelected(item);
-	}
-
-	/**
-	 * A placeholder fragment containing a simple view.
-	 */
-	public static class PlaceholderFragment extends Fragment {
-
-		public PlaceholderFragment() {
-		}
-
-		@Override
-		public View onCreateView(LayoutInflater inflater, ViewGroup container,
-				Bundle savedInstanceState) {
-			View rootView = inflater.inflate(R.layout.fragment_ad_mechanism,
-					container, false);
-			return rootView;
 		}
 	}
 }

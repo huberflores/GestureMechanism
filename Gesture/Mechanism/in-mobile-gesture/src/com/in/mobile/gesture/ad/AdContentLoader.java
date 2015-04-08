@@ -5,14 +5,15 @@
  * GNU General Public License for more details.
  *
  * Please send inquiries to huber AT ut DOT ee
+ *
+ * author Huber Flores
+ * in-mobile, 2014
  */
 
 package com.in.mobile.gesture.ad;
 
 import java.io.File;
-
 import com.in.mobile.database.adcontainer.DatabaseHandler;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -23,20 +24,11 @@ import android.graphics.PointF;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
-import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
-import android.view.ViewGroup.LayoutParams;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.ImageView.ScaleType;
-
-/*
- * author Huber Flores
- * in-mobile, 2014
- */
 
 public class AdContentLoader implements OnTouchListener {
 
