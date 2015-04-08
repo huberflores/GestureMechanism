@@ -14,7 +14,6 @@ package com.in.mobile.gesture.ad;
 
 import java.io.File;
 import java.io.IOException;
-
 import com.google.android.gcm.GCMRegistrar;
 import com.in.mobile.common.utilities.Commons;
 import com.in.mobile.database.adcontainer.DatabaseCommons;
@@ -27,52 +26,26 @@ import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.Matrix;
 import android.graphics.Point;
-import android.graphics.PointF;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.View.OnTouchListener;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
+import android.view.ViewGroup;
 
-public class AdContentLoader implements OnTouchListener {
+public class AdContentLoader {
 
-	public static float IMAGEHEIGHT;
-	public static float IMAGEWIDTH;
-	public static int SCREENWIDTH;
-	public static int SCREENHEIGHT;
-	public static boolean SHOWFLAG = false;
+	static Activity activity;
 
-	Activity activity;
+	static DynamicAdView dynamicAdView;
 
-	Matrix matrix = new Matrix();
-	Matrix savedMatrix = new Matrix();
+	static DatabaseHandler dbHandler;
 
-	float newX;
-	float newY;
-	float resizeWidth;
-	float resizeHeight;
-
-	PointF start = new PointF();
-	PointF mid = new PointF();
-	float oldDist = 1f;
-
-	public static DynamicAdView dynamicAdView;
-	ImageView imageView;
-
-	DatabaseHandler dataAds;
-	
 	private final BroadcastReceiver mHandleMessageReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			String newMessage = intent.getExtras().getString(
 					Commons.EXTRA_MESSAGE);
-
 		}
 	};
 
@@ -80,64 +53,35 @@ public class AdContentLoader implements OnTouchListener {
 
 		activity = context;
 
+		Point screenSize = new Point();
+
+		activity.getWindowManager().getDefaultDisplay().getSize(screenSize);
+
 		GCMRegistrar.checkManifest(activity);
 
-		Point size = new Point();
+		dynamicAdView = new DynamicAdView(context, 200, 200, screenSize.x,
+				screenSize.y, "ad.jpg", Color.rgb(255, 0, 0));
 
-		activity.getWindowManager().getDefaultDisplay().getSize(size);
+		((ViewGroup) activity.getWindow().getDecorView()
+				.findViewById(android.R.id.content)).addView(dynamicAdView);
 
-		FrameLayout frameLayout = (FrameLayout) activity.getWindow()
-				.getDecorView().findViewById(android.R.id.content);
+		dbHandler = DatabaseHandler.getInstance();
+		dbHandler.setContext(context);
 
-		SCREENWIDTH = size.x;
-		SCREENHEIGHT = size.y;
-
-		matrix.setTranslate(1f, 1f);
-		matrix.setScale(0.1f, 0.1f);
-
-		dynamicAdView = new DynamicAdView(context, 200, 200, SCREENWIDTH,
-				SCREENHEIGHT, "ad.jpg", Color.rgb(255, 0, 0));
-
-		frameLayout.addView(dynamicAdView);
-
-		dataAds = DatabaseHandler.getInstance();
-		dataAds.setContext(context);
-		
 		activity.registerReceiver(mHandleMessageReceiver, new IntentFilter(
 				Commons.DISPLAY_MESSAGE_ACTION));
 
-		Thread thread = new Thread(new Runnable() {
+		new Thread(new Runnable() {
 			@Override
 			public void run() {
 				try {
 					GCMRegistrar.register(activity.getApplicationContext(),
 							Commons.SENDER_ID);
 				} catch (Exception e) {
-					Log.e("AdMechanism - onCreate", e.toString());
+					Log.e("AdContentLoader", e.toString());
 				}
 			}
-		});
-
-		thread.start();
-	}
-
-	@Override
-	public boolean onTouch(View v, MotionEvent rawEvent) {
-		WrapMotionEvent event = WrapMotionEvent.wrap(rawEvent);
-
-		DynamicAdView view = (DynamicAdView) v;
-
-		IMAGEHEIGHT = dynamicAdView.getHeight();
-		IMAGEWIDTH = dynamicAdView.getWidth();
-
-		switch (event.getAction() & MotionEvent.ACTION_MASK) {
-
-		case MotionEvent.ACTION_MOVE:
-
-			break;
-		}
-
-		return true;
+		}).start();
 	}
 
 	public void onPause() {
@@ -151,34 +95,33 @@ public class AdContentLoader implements OnTouchListener {
 	}
 
 	public static void adUpdate(final String fileName) {
-
 		Handler handler = new Handler(Looper.getMainLooper());
 		handler.post(new Runnable() {
 			public void run() {
 				// UI code
-				File dir = Environment.getExternalStorageDirectory();
-				File myFile = new File(dir, fileName);
+//				File dir = Environment.getExternalStorageDirectory();
+//				File myFile = new File(dir, fileName);
+//
+//				BitmapFactory.Options bitmapFatoryOptions = new BitmapFactory.Options();
+//				bitmapFatoryOptions.inPreferredConfig = Bitmap.Config.RGB_565;
+//				Bitmap myBitmap2 = BitmapFactory.decodeFile(
+//						myFile.getAbsolutePath(), bitmapFatoryOptions);
 
-				BitmapFactory.Options bitmapFatoryOptions = new BitmapFactory.Options();
-				bitmapFatoryOptions.inPreferredConfig = Bitmap.Config.RGB_565;
-				Bitmap myBitmap2 = BitmapFactory.decodeFile(
-						myFile.getAbsolutePath(), bitmapFatoryOptions);
-
-				dynamicAdView.UpdateImage(myBitmap2);
+				dynamicAdView.UpdateImage(BitmapFactory.decodeResource(activity.getResources(), R.drawable.ad_image));
 			}
 		});
 	}
 
 	// Mising database query
 	public void adUpdate(int adIdentifier) {
-		final String adFilePath = dataAds.getInstance().getDatabaseManager()
+		final String adFilePath = dbHandler.getInstance().getDatabaseManager()
 				.getAdFilePath(adIdentifier);
 
 		if (adFilePath != null) {
 			adUpdate(adFilePath);
 		}
 	}
-	
+
 	public void extractDatabaseFile(DatabaseCommons db) {
 		try {
 			db.copyDatabaseFile();
