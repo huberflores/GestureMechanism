@@ -12,18 +12,13 @@
 
 package com.in.mobile.gesture.ad;
 
-import java.io.IOException;
 import com.google.android.gcm.GCMRegistrar;
 import com.in.mobile.common.utilities.Commons;
-import com.in.mobile.database.adcontainer.DatabaseCommons;
-import com.in.mobile.database.adcontainer.DatabaseHandler;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Handler;
 import android.os.Looper;
@@ -36,13 +31,10 @@ public class AdContentLoader {
 
 	static DynamicAdView dynamicAdView;
 
-	static DatabaseHandler dbHandler;
-
-	private final BroadcastReceiver mHandleMessageReceiver = new BroadcastReceiver() {
+	private final BroadcastReceiver messageReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			String newMessage = intent.getExtras().getString(
-					Commons.EXTRA_MESSAGE);
+			intent.getExtras().getString(Commons.EXTRA_MESSAGE);
 		}
 	};
 
@@ -56,16 +48,12 @@ public class AdContentLoader {
 
 		GCMRegistrar.checkManifest(activity);
 
-		dynamicAdView = new DynamicAdView(context, 200, 200, screenSize.x,
-				screenSize.y, "ad.jpg", Color.rgb(255, 0, 0));
+		dynamicAdView = new DynamicAdView(context, screenSize.x, screenSize.y);
 
 		((ViewGroup) activity.getWindow().getDecorView()
 				.findViewById(android.R.id.content)).addView(dynamicAdView);
 
-		dbHandler = DatabaseHandler.getInstance();
-		dbHandler.setContext(context);
-
-		activity.registerReceiver(mHandleMessageReceiver, new IntentFilter(
+		activity.registerReceiver(messageReceiver, new IntentFilter(
 				Commons.DISPLAY_MESSAGE_ACTION));
 
 		new Thread(new Runnable() {
@@ -86,44 +74,17 @@ public class AdContentLoader {
 	}
 
 	public void destroy() {
-		activity.unregisterReceiver(mHandleMessageReceiver);
+		activity.unregisterReceiver(messageReceiver);
 
 		GCMRegistrar.onDestroy(activity);
 	}
 
-	public static void adUpdate(final String fileName) {
+	public static void adUpdate(final Ad ad) {
 		Handler handler = new Handler(Looper.getMainLooper());
 		handler.post(new Runnable() {
 			public void run() {
-				// UI code
-//				File dir = Environment.getExternalStorageDirectory();
-//				File myFile = new File(dir, fileName);
-//
-//				BitmapFactory.Options bitmapFatoryOptions = new BitmapFactory.Options();
-//				bitmapFatoryOptions.inPreferredConfig = Bitmap.Config.RGB_565;
-//				Bitmap myBitmap2 = BitmapFactory.decodeFile(
-//						myFile.getAbsolutePath(), bitmapFatoryOptions);
-
-				dynamicAdView.UpdateImage(BitmapFactory.decodeResource(activity.getResources(), R.drawable.ad_image));
+				dynamicAdView.UpdateImage(ad);
 			}
 		});
-	}
-
-	// Mising database query
-	public void adUpdate(int adIdentifier) {
-		final String adFilePath = dbHandler.getInstance().getDatabaseManager()
-				.getAdFilePath(adIdentifier);
-
-		if (adFilePath != null) {
-			adUpdate(adFilePath);
-		}
-	}
-
-	public void extractDatabaseFile(DatabaseCommons db) {
-		try {
-			db.copyDatabaseFile();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 }

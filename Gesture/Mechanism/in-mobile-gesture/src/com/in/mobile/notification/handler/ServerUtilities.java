@@ -39,7 +39,7 @@ public final class ServerUtilities {
 		// demo server. As the server might be down, we will retry it a couple
 		// times.
 		for (int i = 1; i <= MAX_ATTEMPTS; i++) {
-			Log.d("ServerUtilities - register", "Attempt #" + i
+			Log.e("ServerUtilities - register", "Attempt #" + i
 					+ " to register");
 			try {
 
@@ -59,12 +59,12 @@ public final class ServerUtilities {
 					break;
 				}
 				try {
-					Log.d("ServerUtilities - register", "Sleeping for "
+					Log.e("ServerUtilities - register", "Sleeping for "
 							+ backoff + " ms before retry");
 					Thread.sleep(backoff);
 				} catch (InterruptedException e1) {
 					// Activity finished before we complete - exit.
-					Log.d("ServerUtilities - register",
+					Log.e("ServerUtilities - register",
 							"Thread interrupted: abort remaining retries!");
 					Thread.currentThread().interrupt();
 					return false;
@@ -82,7 +82,7 @@ public final class ServerUtilities {
 	 * Unregister this account/device pair within the server.
 	 */
 	public static void unregister(final Context context, final String regId) {
-		Log.i(Commons.TAG, "unregistering device (regId = " + regId + ")");
+		Log.e(Commons.TAG, "unregistering device (regId = " + regId + ")");
 		String serverUrl = Commons.SERVER_URL + "/unregister";
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("regId", regId);
@@ -133,7 +133,7 @@ public final class ServerUtilities {
 			}
 		}
 		String body = bodyBuilder.toString();
-		Log.v(Commons.TAG, "Posting '" + body + "' to " + url);
+		Log.e(Commons.TAG, "Posting '" + body + "' to " + url);
 		byte[] bytes = body.getBytes();
 		HttpURLConnection conn = null;
 		try {

@@ -19,83 +19,77 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+
 import com.in.mobile.database.adcontainer.DatabaseHandler;
+import com.in.mobile.gesture.ad.Ad;
 import com.in.mobile.gesture.ad.AdContentLoader;
+
 import android.content.Context;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
 
-public class FileDownloader extends AsyncTask<String, Void, String> {
+public class FileDownloader extends AsyncTask<Ad, Void, Ad> {
 
 	Context context;
 
-	private String fileSdcardPath;
-
-	DatabaseHandler dataAds;
-
 	public FileDownloader(Context context) {
 		this.context = context;
-		dataAds = DatabaseHandler.getInstance();
-		dataAds.setContext(context);
 	}
 
 	@Override
-	protected String doInBackground(String... urls) {
-		Log.e("FileDownloader", "doInBackground called");
-		String response = "";
-		for (String pathUrl : urls) {
-			if (pathUrl != null) {
-				Log.e("FileDownloader", pathUrl);
-			} else {
-				Log.e("FileDownloader", "pathUrl is null");
-			}
+	protected Ad doInBackground(Ad... ads) {
+		Log.e("FileDownloader", "Downloading Images");
 
-			try {
-				URL url = new URL(pathUrl);
-				HttpURLConnection urlConnection = (HttpURLConnection) url
-						.openConnection();
-				urlConnection.setRequestMethod("GET");
-				urlConnection.setDoOutput(true);
-				urlConnection.connect();
+		Ad ad = ads[0];
 
-				File SDCardRoot = Environment.getExternalStorageDirectory();
-				File file = new File(SDCardRoot, "ad.jpg");
+		try {
+			Log.e("", "1");
+			URL url = new URL(ad.getSmallImageUrl());
+			Log.e("", "2");
+			HttpURLConnection connection = (HttpURLConnection) url
+					.openConnection();
+			Log.e("", "3");
+			connection.setRequestMethod("GET");
+			Log.e("", "4");
+			connection.connect();
+			Log.e("", "5");
 
-				FileOutputStream fileOutput = new FileOutputStream(file);
-				InputStream inputStream = urlConnection.getInputStream();
+			InputStream inputStream = connection.getInputStream();
+			Log.e("", "6");
 
-				byte[] buffer = new byte[1024];
-				int bufferLength = 0;
-
-				while ((bufferLength = inputStream.read(buffer)) > 0) {
-					fileOutput.write(buffer, 0, bufferLength);
-				}
-
-				fileSdcardPath = file.getAbsolutePath();
-				fileOutput.close();
-
-				dataAds.getInstance().getDatabaseManager()
-						.saveData(fileSdcardPath, pathUrl, 1.0f, 1.0f);
-			} catch (MalformedURLException e) {
-				Log.e("FileDownloader", e.toString());
-			} catch (IOException e) {
-				Log.e("FileDownloader", e.toString());
-			}
+			ad.setSmallImageBmp(BitmapFactory.decodeStream(inputStream));
+			Log.e("", "7");
+		} catch (Exception e) {
+			Log.e("FileDownloader",
+					"Error downloading small image: " + e.toString());
 		}
 
-		return response;
+		try {
+			URL url = new URL(ad.getLargeImageUrl());
+			HttpURLConnection connection = (HttpURLConnection) url
+					.openConnection();
+			connection.setRequestMethod("GET");
+			connection.connect();
+
+			InputStream inputStream = connection.getInputStream();
+
+			ad.setLargeImageBmp(BitmapFactory.decodeStream(inputStream));
+		} catch (Exception e) {
+			Log.e("FileDownloader",
+					"Error downloading small image: " + e.toString());
+		}
+
+		Log.e("FileDownloader", "Image download finished");
+
+		return ad;
 	}
 
 	@Override
-	protected void onPostExecute(String result) {
+	protected void onPostExecute(Ad result) {
 		Toast.makeText(context, "File downloaded", Toast.LENGTH_SHORT).show();
-		AdContentLoader.adUpdate(fileSdcardPath);
-		// AdContentLoader.adUpdate("ad_image.png");
-	}
-
-	public String getFileSdcardPath() {
-		return this.fileSdcardPath;
+		AdContentLoader.adUpdate(result);
 	}
 }

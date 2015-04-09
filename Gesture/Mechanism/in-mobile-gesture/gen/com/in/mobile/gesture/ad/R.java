@@ -1077,8 +1077,7 @@ containing a value of this type.
         public static final int abc_textfield_searchview_holo_light=0x7f020054;
         public static final int abc_textfield_searchview_right_holo_dark=0x7f020055;
         public static final int abc_textfield_searchview_right_holo_light=0x7f020056;
-        public static final int ad_image=0x7f020057;
-        public static final int ic_launcher=0x7f020058;
+        public static final int ic_launcher=0x7f020057;
     }
     public static final class id {
         public static final int action_bar=0x7f09001c;
@@ -1097,7 +1096,6 @@ containing a value of this type.
         public static final int beginning=0x7f090016;
         public static final int checkbox=0x7f09002d;
         public static final int collapseActionView=0x7f090010;
-        public static final int container=0x7f09003c;
         public static final int default_activity_button=0x7f090028;
         public static final int dialog=0x7f090014;
         public static final int disableHome=0x7f090009;
