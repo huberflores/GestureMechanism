@@ -2,10 +2,8 @@ package com.in.mobile.notification.handler;
 
 import com.google.android.gcm.GCMRegistrar;
 import com.in.mobile.common.utilities.Commons;
-
 import android.content.Context;
 import android.util.Log;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;

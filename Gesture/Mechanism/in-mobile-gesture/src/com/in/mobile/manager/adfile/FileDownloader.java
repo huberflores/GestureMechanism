@@ -5,6 +5,9 @@
  * GNU General Public License for more details.
  *
  * Please send inquiries to huber AT ut DOT ee
+ *
+ * author Huber Flores
+ * in-mobile, 2014
  */
 
 package com.in.mobile.manager.adfile;
@@ -16,21 +19,13 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-
 import com.in.mobile.database.adcontainer.DatabaseHandler;
 import com.in.mobile.gesture.ad.AdContentLoader;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
-
-/*
- * author Huber Flores
- * in-mobile, 2014
- */
 
 public class FileDownloader extends AsyncTask<String, Void, String> {
 

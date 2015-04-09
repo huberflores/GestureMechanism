@@ -5,6 +5,9 @@
  * GNU General Public License for more details.
  *
  * Please send inquiries to huber AT ut DOT ee
+ * 
+ * @author Huber Flores
+ * 
  */
 
 package com.in.mobile.database.adcontainer;
@@ -12,41 +15,31 @@ package com.in.mobile.database.adcontainer;
 import android.content.Context;
 import android.net.Uri;
 
-/**
- * 
- * @author Huber Flores
- * 
- */
-
 public class DatabaseHandler {
 
 	public static DatabaseHandler instance;
+	
+	private static DatabaseManager dbManager;
 
 	private Uri dbUri;
-	private static DatabaseManager dManager = null;
-
-	private Context context;
 
 	private DatabaseHandler() {
-
 	}
 
 	public static synchronized DatabaseHandler getInstance() {
 		if (instance == null) {
 			instance = new DatabaseHandler();
-			return instance;
 		}
 
 		return instance;
 	}
 
 	public void setContext(Context context) {
-		this.context = context;
-		dManager = new DatabaseManager(context);
-		dManager.setDbUri(dbUri);
+		dbManager = new DatabaseManager(context);
+		dbManager.setDbUri(dbUri);
 	}
 
 	public static DatabaseManager getDatabaseManager() {
-		return dManager;
+		return dbManager;
 	}
 }

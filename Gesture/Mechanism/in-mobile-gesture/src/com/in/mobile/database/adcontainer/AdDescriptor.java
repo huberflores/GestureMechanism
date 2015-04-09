@@ -5,21 +5,17 @@
  * GNU General Public License for more details.
  *
  * Please send inquiries to huber AT ut DOT ee
+ * 
+ * @author Huber Flores
+ * 
  */
 
 package com.in.mobile.database.adcontainer;
 
 import android.database.sqlite.SQLiteDatabase;
 
-/**
- * 
- * @author Huber Flores
- * 
- */
-
 public class AdDescriptor {
 
-	// Database schema
 	// Table
 	public static final String TABLE_TIMESTAMP = "files";
 	// Attributes

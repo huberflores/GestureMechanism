@@ -5,15 +5,16 @@
  * GNU General Public License for more details.
  *
  * Please send inquiries to huber AT ut DOT ee
+ * 
+ * @author Huber Flores
+ * 
  */
 
 package com.in.mobile.gesture.ad.contentprovider;
 
 import java.util.Arrays;
 import java.util.HashSet;
-
 import com.in.mobile.database.adcontainer.*;
-
 import android.content.ContentProvider;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -23,12 +24,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.text.TextUtils;
-
-/**
- * 
- * @author Huber Flores
- * 
- */
 
 public class AdContentProvider extends ContentProvider {
 
@@ -54,12 +49,10 @@ public class AdContentProvider extends ContentProvider {
 	static {
 		sURIMatcher.addURI(AUTHORITY, BASE_PATH, ADS);
 		sURIMatcher.addURI(AUTHORITY, BASE_PATH + "/#", AD_ID);
-
 	}
 
 	@Override
 	public String getType(Uri uri) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -117,7 +110,6 @@ public class AdContentProvider extends ContentProvider {
 		// make sure that potential listeners are getting notified
 		cursor.setNotificationUri(getContext().getContentResolver(), uri);
 		return cursor;
-
 	}
 
 	@Override

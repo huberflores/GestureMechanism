@@ -5,6 +5,9 @@
  * GNU General Public License for more details.
  *
  * Please send inquiries to huber AT ut DOT ee
+ * 
+ * @author Huber Flores
+ * 
  */
 
 package com.in.mobile.database.adcontainer;
@@ -17,12 +20,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Calendar;
 
-/**
- * 
- * @author Huber Flores
- * 
- */
-
 public class DatabaseCommons {
 
 	private String outFileName;
@@ -32,7 +29,6 @@ public class DatabaseCommons {
 	private String absoluteFilePath;
 
 	public DatabaseCommons() {
-
 	}
 
 	public void copyDatabaseFile() throws IOException {
@@ -56,7 +52,6 @@ public class DatabaseCommons {
 
 		File borrar = new File(absoluteFilePath);
 		borrar.delete();
-
 	}
 
 	public boolean fileToCopy() {
