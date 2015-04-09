@@ -1,3 +1,8 @@
+/*
+ * author Huber Flores
+ * in-mobile, 2014
+ */
+
 package com.in.mobile.gesture.ad;
 
 import android.app.Notification;
@@ -6,17 +11,11 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
-
 import com.google.android.gcm.GCMBaseIntentService;
 import com.google.android.gcm.GCMRegistrar;
 import com.in.mobile.common.utilities.Commons;
 import com.in.mobile.manager.adfile.FileDownloader;
 import com.in.mobile.notification.handler.ServerUtilities;
-
-/*
- * author Huber Flores
- * in-mobile, 2014
- */
 
 public class GCMIntentService extends GCMBaseIntentService {
 
@@ -41,7 +40,6 @@ public class GCMIntentService extends GCMBaseIntentService {
 			// ServerUtilities when the registration to the server failed.
 			// Log.i(TAG, "Ignoring unregister callback");
 		}
-
 	}
 
 	@Override
@@ -81,7 +79,6 @@ public class GCMIntentService extends GCMBaseIntentService {
 
 	@Override
 	protected boolean onRecoverableError(Context context, String errorId) {
-
 		return super.onRecoverableError(context, errorId);
 	}
 

@@ -5,29 +5,25 @@
  * GNU General Public License for more details.
  *
  * Please send inquiries to huber AT ut DOT ee
- */
-
-package com.in.mobile.database.adcontainer;
-
-import com.in.mobile.gesture.ad.contentprovider.*;
-
-import android.content.ContentValues;
-import android.content.Context;
-import android.net.Uri;
-
-/**
  * 
  * @author Huber Flores
  * 
  */
 
+package com.in.mobile.database.adcontainer;
+
+import com.in.mobile.gesture.ad.contentprovider.*;
+import android.content.ContentValues;
+import android.content.Context;
+import android.net.Uri;
+
 public class DatabaseManager {
 
 	private Uri dbUri;
-	private Context dContext;
+	private Context context;
 
 	public DatabaseManager(Context c) {
-		this.dContext = c;
+		this.context = c;
 	}
 
 	public void saveData(String adName, String adUrl, double priority,
@@ -38,7 +34,7 @@ public class DatabaseManager {
 		values.put(AdDescriptor.COLUMN_AD_PRIORITY, priority);
 		values.put(AdDescriptor.COLUMN_AD_TIMETOLIVE, timeToLive);
 
-		dbUri = dContext.getContentResolver().insert(
+		dbUri = context.getContentResolver().insert(
 				AdContentProvider.CONTENT_URI, values);
 	}
 
@@ -47,10 +43,6 @@ public class DatabaseManager {
 	}
 
 	public String getAdFilePath(int adIdentifier) {
-		/*
-		 * TODO database query
-		 */
-
 		return "";
 	}
 }

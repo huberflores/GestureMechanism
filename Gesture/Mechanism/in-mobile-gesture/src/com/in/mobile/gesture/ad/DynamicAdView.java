@@ -1,14 +1,12 @@
 package com.in.mobile.gesture.ad;
 
 import java.io.File;
-
 import android.os.Environment;
 import android.support.v4.view.MotionEventCompat;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
@@ -21,8 +19,6 @@ import android.graphics.BitmapFactory;
 
 public class DynamicAdView extends FrameLayout {
 
-	private static final String TAG = "DynamicAd";
-	private static final int INVALID_POINTER_ID = -1;
 	private static final int NONE = 0;
 	private static final int DRAG = 1;
 	private static final int ZOOM = 2;
@@ -117,19 +113,19 @@ public class DynamicAdView extends FrameLayout {
 			lastTouchY = y;
 
 			if (mode == DRAG) {
-				Log.e(TAG, "Drag");
+				Log.e("DynamicAdView - onTouchEvent", "Drag");
 
 				setX(posX);
 				setY(posY);
 			} else if (mode == ZOOM) {
 				newDist = getTouchSpacing(event);
 
-				if (newDist > 10f) {				
-					Log.e(TAG, "Zoom");
+				if (newDist > 10f) {
+					Log.e("DynamicAdView - onTouchEvent", "Zoom");
 
 					float zoomInScale = (newDist / oldDist) + 1;
 					float zoomOutScale = (newDist / oldDist);
-					
+
 					ViewGroup.LayoutParams lp = getLayoutParams();
 
 					if (newDist - oldDist > 200) {
@@ -142,7 +138,7 @@ public class DynamicAdView extends FrameLayout {
 						if (zoomStartingWidth * zoomInScale < maxWidth) {
 							lp.width = (int) (zoomStartingWidth * zoomOutScale);
 						}
-						if (zoomStartingHeight * zoomInScale< maxHeight) {
+						if (zoomStartingHeight * zoomInScale < maxHeight) {
 							lp.height = (int) (zoomStartingHeight * zoomOutScale);
 						}
 					} else if (newDist - oldDist < 0) {
@@ -175,7 +171,7 @@ public class DynamicAdView extends FrameLayout {
 
 			if (oldDist > 10f) {
 				mode = ZOOM;
-				
+
 				zoomStartingWidth = getLayoutParams().width;
 				zoomStartingHeight = getLayoutParams().height;
 			}
