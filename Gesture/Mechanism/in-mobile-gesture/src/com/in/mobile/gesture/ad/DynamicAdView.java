@@ -160,7 +160,9 @@ public class DynamicAdView extends RelativeLayout {
 			if (mode == DRAG) {
 				Log.e("DynamicAdView", "Drag");
 
-				setX(posX);
+//				if (!isFullScreen) {
+					setX(posX);
+//				}
 				setY(posY);
 			} else if (mode == ZOOM) {
 				newDist = getTouchSpacing(event);
@@ -210,6 +212,14 @@ public class DynamicAdView extends RelativeLayout {
 				Log.e("DynamicAdView ", "Click");
 
 				performClick();
+			} else if (isFullScreen && posY < -(maxWidth / 2)) {
+				dislike();
+				animateToFullScreen();
+			} else if (isFullScreen && posY > maxWidth / 2) {
+				like();
+				animateToFullScreen();
+			} else if (isFullScreen) {
+				animateToFullScreen();
 			}
 
 			break;
@@ -405,5 +415,13 @@ public class DynamicAdView extends RelativeLayout {
 		int blue = Color.blue(pixel);
 
 		return Color.rgb(red, green, blue);
+	}
+
+	void like() {
+		Log.e("DynamicAdView", "Like");
+	}
+
+	void dislike() {
+		Log.e("DynamicAdView", "Dislike");
 	}
 }
