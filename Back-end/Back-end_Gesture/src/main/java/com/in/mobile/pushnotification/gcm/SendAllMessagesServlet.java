@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -62,6 +63,11 @@ public class SendAllMessagesServlet extends BaseServlet {
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException, ServletException {
+
+		Random rand = new Random();
+
+		int randomNum = rand.nextInt(2) + 1;
+
 		List<String> devices = Datastore.getDevices();
 		StringBuilder status = new StringBuilder();
 		if (devices.isEmpty()) {
@@ -74,26 +80,54 @@ public class SendAllMessagesServlet extends BaseServlet {
 			if (devices.size() == 1) {
 				// send a single message using plain post
 				String registrationId = devices.get(0);
-				Message message = new Message.Builder()
-						.delayWhileIdle(true)
-						.addData("img_small",
-								"http://33.media.tumblr.com/avatar_6e62f5f7e502_128.png")
-						.addData(
-								"img_large",
-								"http://files1.coloribus.com/files/adsarchive/part_1506/15060005/file/mcdonalds-loose-change-1-600-40618.jpg")
-						.build();
+
+				Message message = null;
+
+				if (randomNum == 1) {
+					message = new Message.Builder()
+							.delayWhileIdle(true)
+							.addData("img_small",
+									"http://33.media.tumblr.com/avatar_6e62f5f7e502_128.png")
+							.addData(
+									"img_large",
+									"http://files1.coloribus.com/files/adsarchive/part_1506/15060005/file/mcdonalds-loose-change-1-600-40618.jpg")
+							.build();
+				} else {
+					message = new Message.Builder()
+							.delayWhileIdle(true)
+							.addData("img_small",
+									"http://png-3.findicons.com/files/icons/917/soda_pop_caps/128/coca_cola.png")
+							.addData("img_large",
+									"http://www.toxel.com/wp-content/uploads/2008/08/cocacolaads15.jpg")
+							.build();
+				}
+
 				Result result = sender.send(message, registrationId, 5);
 				results = Arrays.asList(result);
 			} else {
 				// send a multicast message using JSON
-				Message message = new Message.Builder()
-						.delayWhileIdle(true)
-						.addData("img_small",
-								"http://33.media.tumblr.com/avatar_6e62f5f7e502_128.png")
-						.addData(
-								"img_large",
-								"http://files1.coloribus.com/files/adsarchive/part_1506/15060005/file/mcdonalds-loose-change-1-600-40618.jpg")
-						.build();
+
+				Message message = null;
+
+				if (randomNum == 1) {
+					message = new Message.Builder()
+							.delayWhileIdle(true)
+							.addData("img_small",
+									"http://33.media.tumblr.com/avatar_6e62f5f7e502_128.png")
+							.addData(
+									"img_large",
+									"http://files1.coloribus.com/files/adsarchive/part_1506/15060005/file/mcdonalds-loose-change-1-600-40618.jpg")
+							.build();
+				} else {
+					message = new Message.Builder()
+							.delayWhileIdle(true)
+							.addData("img_small",
+									"http://png-3.findicons.com/files/icons/917/soda_pop_caps/128/coca_cola.png")
+							.addData("img_large",
+									"http://www.toxel.com/wp-content/uploads/2008/08/cocacolaads15.jpg")
+							.build();
+				}
+
 				MulticastResult result = sender.send(message, devices, 5);
 				results = result.getResults();
 			}
