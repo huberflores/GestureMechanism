@@ -4,9 +4,11 @@ import java.util.Calendar;
 import android.support.v4.view.MotionEventCompat;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.Transformation;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.ImageView.ScaleType;
@@ -55,8 +57,8 @@ public class DynamicAdView extends RelativeLayout {
 
 		super(context);
 
-		this.maxWidth = maxWidth;
-		this.maxHeight = maxHeight;
+		this.maxWidth = maxWidth / 2;
+		this.maxHeight = maxHeight / 2;
 
 		LayoutParams layout = new LayoutParams(0, 0);
 
@@ -160,10 +162,11 @@ public class DynamicAdView extends RelativeLayout {
 			if (mode == DRAG) {
 				Log.e("DynamicAdView", "Drag");
 
-//				if (!isFullScreen) {
-					setX(posX);
-//				}
-				setY(posY);
+				setX(posX);
+
+				if (!isFullScreen) {
+					setY(posY);
+				}
 			} else if (mode == ZOOM) {
 				newDist = getTouchSpacing(event);
 
@@ -208,18 +211,18 @@ public class DynamicAdView extends RelativeLayout {
 
 		case MotionEvent.ACTION_UP:
 		case MotionEvent.ACTION_CANCEL: {
-			if (Calendar.getInstance().getTimeInMillis() - gestureStartTime < 200) {
+			if (Calendar.getInstance().getTimeInMillis() - gestureStartTime < 100) {
 				Log.e("DynamicAdView ", "Click");
 
 				performClick();
 			} else if (isFullScreen && posY < -(maxWidth / 2)) {
 				dislike();
-				animateToFullScreen();
+				// animateToFullScreen();
 			} else if (isFullScreen && posY > maxWidth / 2) {
 				like();
-				animateToFullScreen();
+				// animateToFullScreen();
 			} else if (isFullScreen) {
-				animateToFullScreen();
+				// animateToFullScreen();
 			}
 
 			break;
@@ -273,8 +276,8 @@ public class DynamicAdView extends RelativeLayout {
 				getLayoutParams().height = getLayoutParams().height = currentHeight
 						+ (int) ((maxHeight - currentHeight) * interpolatedTime);
 
-				setX(posX + (int) (0 - posX * interpolatedTime));
-				setY(posY + (int) (0 - posY * interpolatedTime));
+				setX(posX - (int) (posX * interpolatedTime));
+				setY(posY - (int) (posY * interpolatedTime));
 
 				requestLayout();
 
@@ -309,8 +312,8 @@ public class DynamicAdView extends RelativeLayout {
 				touchesEnabled = true;
 				isFullScreen = true;
 
-				posX = 0;
-				posY = 0;
+				posX = getX();
+				posY = getY();
 			}
 		});
 
