@@ -13,7 +13,7 @@ public class Commons {
 	
 	public static final String SENDER_ID = "431447948280";
 	//MY MAC
-	public static final String SERVER_URL = "http://192.168.1.242:8080/Back-end_Gesture";
+	public static final String SERVER_URL = "http://192.168.1.241:8080/Back-end_Gesture";
 	//MY LAPTOP
 //	public static final String SERVER_URL = "http://192.168.1.153:8080/Back-end_Gesture";
 

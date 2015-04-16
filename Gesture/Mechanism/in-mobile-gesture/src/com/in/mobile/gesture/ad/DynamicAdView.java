@@ -57,8 +57,8 @@ public class DynamicAdView extends RelativeLayout {
 
 		super(context);
 
-		this.maxWidth = maxWidth / 2;
-		this.maxHeight = maxHeight / 2;
+		this.maxWidth = maxWidth;
+		this.maxHeight = maxHeight;
 
 		LayoutParams layout = new LayoutParams(0, 0);
 
@@ -108,7 +108,7 @@ public class DynamicAdView extends RelativeLayout {
 			layout.addRule(ALIGN_PARENT_RIGHT);
 			layout.addRule(ALIGN_PARENT_BOTTOM);
 		} else {
-			layout.addRule(CENTER_IN_PARENT);
+			// layout.addRule(CENTER_IN_PARENT);
 		}
 	}
 
@@ -162,9 +162,10 @@ public class DynamicAdView extends RelativeLayout {
 			if (mode == DRAG) {
 				Log.e("DynamicAdView", "Drag");
 
-				setX(posX);
-
-				if (!isFullScreen) {
+				if (isFullScreen) {
+					setX(posX);
+				} else {
+					setX(posX);
 					setY(posY);
 				}
 			} else if (mode == ZOOM) {
@@ -215,14 +216,15 @@ public class DynamicAdView extends RelativeLayout {
 				Log.e("DynamicAdView ", "Click");
 
 				performClick();
-			} else if (isFullScreen && posY < -(maxWidth / 2)) {
+			} else if ((isFullScreen && posX < -(maxWidth / 3))
+					|| (!isFullScreen && posX < 0)) {
 				dislike();
-				// animateToFullScreen();
-			} else if (isFullScreen && posY > maxWidth / 2) {
+			} else if ((isFullScreen && posX > maxWidth / 3)
+					|| (!isFullScreen && posX > maxWidth
+							- getLayoutParams().width)) {
 				like();
-				// animateToFullScreen();
 			} else if (isFullScreen) {
-				// animateToFullScreen();
+				animateToFullScreen();
 			}
 
 			break;
@@ -276,8 +278,11 @@ public class DynamicAdView extends RelativeLayout {
 				getLayoutParams().height = getLayoutParams().height = currentHeight
 						+ (int) ((maxHeight - currentHeight) * interpolatedTime);
 
+				if (!isFullScreen) {
+					setY(posY - (int) (posY * interpolatedTime));
+				}
+
 				setX(posX - (int) (posX * interpolatedTime));
-				setY(posY - (int) (posY * interpolatedTime));
 
 				requestLayout();
 
@@ -297,7 +302,6 @@ public class DynamicAdView extends RelativeLayout {
 		};
 
 		a.setDuration(1000);
-		a.setFillAfter(true);
 		a.setAnimationListener(new AnimationListener() {
 			@Override
 			public void onAnimationStart(Animation animation) {
@@ -379,6 +383,76 @@ public class DynamicAdView extends RelativeLayout {
 		startAnimation(a);
 	}
 
+	void animateLeftOffScreen() {
+		touchesEnabled = false;
+
+		Animation a = new Animation() {
+
+			@Override
+			protected void applyTransformation(float interpolatedTime,
+					Transformation t) {
+
+				setX(posX - (int) ((maxWidth * 2 - posX) * interpolatedTime));
+			}
+		};
+
+		a.setDuration(500);
+		a.setFillAfter(true);
+		a.setAnimationListener(new AnimationListener() {
+			@Override
+			public void onAnimationStart(Animation animation) {
+			}
+
+			@Override
+			public void onAnimationRepeat(Animation animation) {
+			}
+
+			@Override
+			public void onAnimationEnd(Animation animation) {
+				touchesEnabled = true;
+
+				reset();
+			}
+		});
+
+		startAnimation(a);
+	}
+
+	void animateRightOffScreen() {
+		touchesEnabled = false;
+
+		Animation a = new Animation() {
+
+			@Override
+			protected void applyTransformation(float interpolatedTime,
+					Transformation t) {
+
+				setX(posX + (int) ((maxWidth - posX) * interpolatedTime));
+			}
+		};
+
+		a.setDuration(500);
+		a.setFillAfter(true);
+		a.setAnimationListener(new AnimationListener() {
+			@Override
+			public void onAnimationStart(Animation animation) {
+			}
+
+			@Override
+			public void onAnimationRepeat(Animation animation) {
+			}
+
+			@Override
+			public void onAnimationEnd(Animation animation) {
+				touchesEnabled = true;
+
+				reset();
+			}
+		});
+
+		startAnimation(a);
+	}
+
 	public void UpdateImage(Ad ad) {
 		this.ad = ad;
 
@@ -386,7 +460,9 @@ public class DynamicAdView extends RelativeLayout {
 			this.startingWidth = ad.getSmallImageBmp().getWidth();
 			this.startingHeight = ad.getSmallImageBmp().getHeight();
 
-			setBackgroundColor(getDominantColor(ad.getSmallImageBmp()));
+			
+			//FIXME
+			setBackgroundColor(getDominantColor(ad.getLargeImageBmp()));
 		} else if (ad.getLargeImageBmp() != null) {
 			this.startingWidth = ad.getLargeImageBmp().getWidth();
 			this.startingHeight = ad.getLargeImageBmp().getHeight();
@@ -406,6 +482,14 @@ public class DynamicAdView extends RelativeLayout {
 
 		image.setImageBitmap(ad.getSmallImageBmp());
 		image.invalidate();
+
+		setX(0);
+		setY(0);
+
+		posX = 0;
+		posY = 0;
+
+		isFullScreen = false;
 	}
 
 	int getDominantColor(Bitmap bmp) {
@@ -422,9 +506,21 @@ public class DynamicAdView extends RelativeLayout {
 
 	void like() {
 		Log.e("DynamicAdView", "Like");
+
+		animateRightOffScreen();
 	}
 
 	void dislike() {
 		Log.e("DynamicAdView", "Dislike");
+
+		animateLeftOffScreen();
+	}
+
+	void reset() {
+		setVisibility(INVISIBLE);
+
+		image.setImageBitmap(null);
+
+		animateToOriginal(maxWidth, maxHeight);
 	}
 }
