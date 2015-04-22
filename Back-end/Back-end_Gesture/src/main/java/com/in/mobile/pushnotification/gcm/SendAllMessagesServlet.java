@@ -64,9 +64,12 @@ public class SendAllMessagesServlet extends BaseServlet {
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException, ServletException {
 
-		Random rand = new Random();
+		int adId = 1;
 
-		int randomNum = rand.nextInt(2) + 1;
+		try {
+			adId = Integer.parseInt(req.getPathInfo().substring(1));
+		} catch (Exception e) {
+		}
 
 		List<String> devices = Datastore.getDevices();
 		StringBuilder status = new StringBuilder();
@@ -83,7 +86,7 @@ public class SendAllMessagesServlet extends BaseServlet {
 
 				Message message = null;
 
-				if (randomNum == 1) {
+				if (adId == 1) {
 					message = new Message.Builder()
 							.delayWhileIdle(true)
 							.addData("img_small",
@@ -92,13 +95,23 @@ public class SendAllMessagesServlet extends BaseServlet {
 									"img_large",
 									"http://files1.coloribus.com/files/adsarchive/part_1506/15060005/file/mcdonalds-loose-change-1-600-40618.jpg")
 							.build();
-				} else {
+				} else if (adId == 2) {
 					message = new Message.Builder()
 							.delayWhileIdle(true)
 							.addData("img_small",
 									"http://png-3.findicons.com/files/icons/917/soda_pop_caps/128/coca_cola.png")
 							.addData("img_large",
 									"http://www.toxel.com/wp-content/uploads/2008/08/cocacolaads15.jpg")
+							.build();
+				} else if (adId == 3) {
+
+					message = new Message.Builder()
+							.delayWhileIdle(true)
+							.addData(
+									"img_small",
+									"http://pbs.twimg.com/profile_images/1077924658/adidas_stella_128x128_normal.gif")
+							.addData("img_large",
+									"http://image.naldzgraphics.net/2011/11/23-Adidas-f50-Ad.jpg")
 							.build();
 				}
 
@@ -109,7 +122,7 @@ public class SendAllMessagesServlet extends BaseServlet {
 
 				Message message = null;
 
-				if (randomNum == 1) {
+				if (adId == 1) {
 					message = new Message.Builder()
 							.delayWhileIdle(true)
 							.addData("img_small",
@@ -118,13 +131,23 @@ public class SendAllMessagesServlet extends BaseServlet {
 									"img_large",
 									"http://files1.coloribus.com/files/adsarchive/part_1506/15060005/file/mcdonalds-loose-change-1-600-40618.jpg")
 							.build();
-				} else {
+				} else if (adId == 2) {
 					message = new Message.Builder()
 							.delayWhileIdle(true)
 							.addData("img_small",
 									"http://png-3.findicons.com/files/icons/917/soda_pop_caps/128/coca_cola.png")
 							.addData("img_large",
 									"http://www.toxel.com/wp-content/uploads/2008/08/cocacolaads15.jpg")
+							.build();
+				} else if (adId == 3) {
+
+					message = new Message.Builder()
+							.delayWhileIdle(true)
+							.addData(
+									"img_small",
+									"http://pbs.twimg.com/profile_images/1077924658/adidas_stella_128x128_normal.gif")
+							.addData("img_large",
+									"http://image.naldzgraphics.net/2011/11/23-Adidas-f50-Ad.jpg")
 							.build();
 				}
 

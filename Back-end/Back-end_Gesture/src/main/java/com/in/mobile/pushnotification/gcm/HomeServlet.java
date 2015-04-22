@@ -56,10 +56,15 @@ public class HomeServlet extends BaseServlet {
 			out.print("<h2>No devices registered!</h2>");
 		} else {
 			out.print("<h2>" + devices.size() + " device(s) registered!</h2>");
-			out.print("<form name='form' method='POST' action='sendAll'>");
-			out.print("<input type='submit' value='Send Message' />");
+			out.print("<form name='form' method='POST' action='http://localhost:8080/Back-end_Gesture/sendAll/1'>");			
+			out.print("<input type='submit' value='Send McDonalds' />");
 			out.print("</form>");
-			out.print(devices.get(0));
+			out.print("<form name='form' method='POST' action='http://localhost:8080/Back-end_Gesture/sendAll/2'>");			
+			out.print("<input type='submit' value='Send Coca Cola' />");
+			out.print("</form>");
+			out.print("<form name='form' method='POST' action='http://localhost:8080/Back-end_Gesture/sendAll/3'>");			
+			out.print("<input type='submit' value='Send Adidas' />");
+			out.print("</form>");
 		}
 		out.print("</body></html>");
 		resp.setStatus(HttpServletResponse.SC_OK);
