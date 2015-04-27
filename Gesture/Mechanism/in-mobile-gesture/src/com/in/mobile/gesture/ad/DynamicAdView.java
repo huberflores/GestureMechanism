@@ -4,11 +4,12 @@ import java.util.Calendar;
 import android.support.v4.view.MotionEventCompat;
 import android.util.Log;
 import android.view.MotionEvent;
-import android.view.ViewGroup;
+import android.view.VelocityTracker;
+import android.view.GestureDetector;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
+import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Transformation;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.ImageView.ScaleType;
@@ -35,6 +36,8 @@ public class DynamicAdView extends RelativeLayout {
 
 	private int mode = NONE;
 
+	private float firstX;
+	private float firstY;
 	private float lastTouchX;
 	private float lastTouchY;
 	private float posX;
@@ -46,6 +49,8 @@ public class DynamicAdView extends RelativeLayout {
 
 	private boolean isFullScreen = false;
 	private boolean touchesEnabled = true;
+
+	private VelocityTracker velocityTracker = null;
 
 	public Position position;
 
@@ -134,11 +139,19 @@ public class DynamicAdView extends RelativeLayout {
 		case MotionEvent.ACTION_DOWN: {
 			gestureStartTime = Calendar.getInstance().getTimeInMillis();
 
+			if (velocityTracker == null) {
+				velocityTracker = VelocityTracker.obtain();
+			} else {
+				velocityTracker.clear();
+			}
+
+			velocityTracker.addMovement(event);
+
 			final float x = event.getRawX();
 			final float y = event.getRawY();
 
-			lastTouchX = x;
-			lastTouchY = y;
+			lastTouchX = firstX = x;
+			lastTouchY = firstY = y;
 
 			mode = DRAG;
 
@@ -168,6 +181,9 @@ public class DynamicAdView extends RelativeLayout {
 					setX(posX);
 					setY(posY);
 				}
+
+				velocityTracker.addMovement(event);
+
 			} else if (mode == ZOOM) {
 				newDist = getTouchSpacing(event);
 
@@ -225,7 +241,15 @@ public class DynamicAdView extends RelativeLayout {
 				like();
 			} else if (isFullScreen) {
 				animateToFullScreen();
+			} else if (!isFullScreen && mode == DRAG) {
+				velocityTracker.computeCurrentVelocity(1000);
+				
+				animateDeceleration(velocityTracker.getXVelocity(),
+						velocityTracker.getYVelocity());
+
 			}
+
+			velocityTracker.recycle();
 
 			break;
 		}
@@ -453,6 +477,74 @@ public class DynamicAdView extends RelativeLayout {
 		startAnimation(a);
 	}
 
+	void animateDeceleration(final float velocityX, final float velocityY) {
+
+		Log.e("Decelerate x velocity", String.valueOf(velocityX));
+		Log.e("Decelerate y velocity", String.valueOf(velocityY));
+
+		float endx = 0;
+		float endy = 0;
+
+		if (posX < firstX) {
+			endx = Math.max(getX() - firstX * 2, 0);
+		} else if (posX > firstX) {
+			endx = Math.min(firstX + getX(), maxWidth);
+		}
+
+		if (posY < firstY) {
+			endy = Math.max(getY() - firstY * 2, 0);
+		} else if (posY > firstY) {
+			endy = Math.min(firstY + getY(), maxHeight);
+		}
+
+		final float endX = endx;
+		final float endY = endy;
+
+		touchesEnabled = false;
+
+		Animation a = new Animation() {
+
+			@Override
+			protected void applyTransformation(float interpolatedTime,
+					Transformation t) {
+				if (posX + (int) ((endX) * interpolatedTime) > 0
+						&& posX + (int) ((endX) * interpolatedTime) < maxWidth
+								- startingWidth) {
+					setX(posX + (int) ((endX) * interpolatedTime));
+				}
+
+				if (posY + (int) ((endY) * interpolatedTime) > 0
+						&& posY + (int) ((endY) * interpolatedTime) < maxHeight
+								- startingHeight) {
+					setY(posY + (int) ((endY) * interpolatedTime));
+				}
+			}
+		};
+
+		a.setDuration(500);
+		a.setFillAfter(true);
+		// a.setInterpolator(new DecelerateInterpolator());
+		a.setAnimationListener(new AnimationListener() {
+			@Override
+			public void onAnimationStart(Animation animation) {
+			}
+
+			@Override
+			public void onAnimationRepeat(Animation animation) {
+			}
+
+			@Override
+			public void onAnimationEnd(Animation animation) {
+				posX = getX();
+				posY = getY();
+
+				touchesEnabled = true;
+			}
+		});
+
+		startAnimation(a);
+	}
+
 	public void UpdateImage(Ad ad) {
 		this.ad = ad;
 
@@ -460,8 +552,7 @@ public class DynamicAdView extends RelativeLayout {
 			this.startingWidth = ad.getSmallImageBmp().getWidth();
 			this.startingHeight = ad.getSmallImageBmp().getHeight();
 
-			
-			//FIXME
+			// FIXME
 			setBackgroundColor(getDominantColor(ad.getLargeImageBmp()));
 		} else if (ad.getLargeImageBmp() != null) {
 			this.startingWidth = ad.getLargeImageBmp().getWidth();

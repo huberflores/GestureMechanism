@@ -55,7 +55,7 @@ public class AdContentLoader {
 
 		activity.registerReceiver(messageReceiver, new IntentFilter(
 				Commons.DISPLAY_MESSAGE_ACTION));
-
+		
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
