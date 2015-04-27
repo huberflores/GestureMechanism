@@ -5,7 +5,6 @@ Gesture Mechanism
 Requirements
 -------------
 ```xml
-
 Android support v4 and v7 are required for this project to work.
 Import the projects from your local android sdk installation
 (~/android-sdk/extras/android/support/v4)
@@ -13,7 +12,6 @@ Import the projects from your local android sdk installation
 
 Right click in the project -> Properties -> Android -> (below box - add)
 Include the imported directories.
-
 ```
 ```xml
 AndroidManifest.xml needs to include following permissions:
@@ -30,6 +28,20 @@ AndroidManifest.xml needs to include following permissions:
 <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+```
+```xml
+AndroidManifest.xml needs to define the following receiver:
+
+<receiver
+    android:name="com.google.android.gcm.GCMBroadcastReceiver"
+    android:permission="com.google.android.c2dm.permission.SEND" >
+    <intent-filter>
+        <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+        <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
+
+        <category android:name="your_package" />
+    </intent-filter>
+</receiver>
 ```
 
 Configuration
