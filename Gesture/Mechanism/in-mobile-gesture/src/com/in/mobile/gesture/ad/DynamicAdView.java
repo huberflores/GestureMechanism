@@ -452,6 +452,38 @@ public class DynamicAdView extends RelativeLayout {
 
 		startAnimation(a);
 	}
+	
+	void animateDeceleration(){
+		touchesEnabled = false;
+
+		Animation a = new Animation() {
+
+			@Override
+			protected void applyTransformation(float interpolatedTime,
+					Transformation t) {
+				
+			}
+		};
+
+		a.setDuration(500);
+		a.setFillAfter(true);
+		a.setAnimationListener(new AnimationListener() {
+			@Override
+			public void onAnimationStart(Animation animation) {
+			}
+
+			@Override
+			public void onAnimationRepeat(Animation animation) {
+			}
+
+			@Override
+			public void onAnimationEnd(Animation animation) {
+				touchesEnabled = true;
+			}
+		});
+
+		startAnimation(a);
+	}
 
 	public void UpdateImage(Ad ad) {
 		this.ad = ad;
