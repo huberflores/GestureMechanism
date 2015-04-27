@@ -33,7 +33,7 @@ AndroidManifest.xml needs to include following permissions:
 AndroidManifest.xml needs to define the following receiver:
 
 <receiver
-    android:name="com.google.android.gcm.GCMBroadcastReceiver"
+    android:name="com.in.mobile.gesture.ad.BroadcastReceiver"
     android:permission="com.google.android.c2dm.permission.SEND" >
     <intent-filter>
         <action android:name="com.google.android.c2dm.intent.RECEIVE" />
@@ -42,6 +42,12 @@ AndroidManifest.xml needs to define the following receiver:
         <category android:name="your_package" />
     </intent-filter>
 </receiver>
+```
+
+```xml
+AndroidManifest.xml needs to define the following service:
+
+<service android:name="com.in.mobile.gesture.ad.GCMIntentService" />
 ```
 
 Configuration
