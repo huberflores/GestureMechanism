@@ -3,15 +3,9 @@ Gesture Mechanism
 
 Requirements
 -------------
-Android support v4 and v7 are required for this project to work.
-Import the projects from your local android sdk installation
-(~/android-sdk/extras/android/support/v4)
-(~/android-sdk/extras/android/support/v7)
+Android support v4 and v7 are required for this project to work. Import the projects from your local android sdk installation (~/android-sdk/extras/android/support/v4) (~/android-sdk/extras/android/support/v7) Right click in the project -> Properties -> Android -> (below box - add) Include the imported directories.
 
-Right click in the project -> Properties -> Android -> (below box - add)
-Include the imported directories.
-
-AndroidManifest.xml needs to include following permissions:
+AndroidManifest.xml needs to include following:
 ```xml
 <permission
     android:name="your_package.permission.C2D_MESSAGE"
@@ -25,10 +19,7 @@ AndroidManifest.xml needs to include following permissions:
 <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-```
 
-AndroidManifest.xml needs to define the following receiver:
-```xml
 <receiver
     android:name="com.in.mobile.gesture.ad.BroadcastReceiver"
     android:permission="com.google.android.c2dm.permission.SEND" >
@@ -39,10 +30,7 @@ AndroidManifest.xml needs to define the following receiver:
         <category android:name="your_package" />
     </intent-filter>
 </receiver>
-```
 
-AndroidManifest.xml needs to define the following service:
-```xml
 <service android:name="com.in.mobile.gesture.ad.GCMIntentService" />
 ```
 
@@ -80,12 +68,3 @@ public class MyActivity extends Activity {
 	}
 }
 ```
-
-Configuration
--------------
-
-
-
-
-FAQ
--------------
