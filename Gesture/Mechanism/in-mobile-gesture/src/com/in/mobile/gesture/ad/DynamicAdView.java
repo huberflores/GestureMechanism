@@ -4,13 +4,9 @@ import java.util.Calendar;
 import android.support.v4.view.MotionEventCompat;
 import android.util.Log;
 import android.view.MotionEvent;
-import android.view.VelocityTracker;
-import android.view.GestureDetector;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
-import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Transformation;
-import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.ImageView.ScaleType;
@@ -21,17 +17,21 @@ import android.graphics.Color;
 public class DynamicAdView extends RelativeLayout {
 
 	public enum Position {
-		TOP_LEFT, TOP_CENTER, TOP_RIGHT, CENTER_LEFT, CENTER, CENTER_RIGHT, BOTTOM_LEFT, BOTTOM_CENTER, BOTTOM_RIGHT
+		TOP_LEFT, TOP_CENTER, TOP_RIGHT, CENTER_LEFT, CENTER, CENTER_RIGHT, BOTTOM_LEFT, BOTTOM_CENTER, BOTTOM_RIGHT, COORDINATES
 	}
 
 	private static final int NONE = 0;
 	private static final int DRAG = 1;
 	private static final int ZOOM = 2;
 
+	private int startingX;
+	private int startingY;
 	private int startingWidth;
 	private int startingHeight;
 	private int maxWidth;
 	private int maxHeight;
+	private int zoomStartingX;
+	private int zoomStartingY;
 	private int zoomStartingWidth;
 	private int zoomStartingHeight;
 
@@ -87,31 +87,43 @@ public class DynamicAdView extends RelativeLayout {
 	public void setPosition(Position position) {
 		this.position = position;
 
-		LayoutParams layout = (LayoutParams) getLayoutParams();
-
 		if (position == Position.TOP_LEFT) {
-			layout.addRule(ALIGN_PARENT_LEFT);
-			layout.addRule(ALIGN_PARENT_TOP);
+			setX(0);
+			setY(0);
 		} else if (position == Position.TOP_CENTER) {
-			layout.addRule(ALIGN_PARENT_TOP);
+			setX((maxWidth - getWidth()) / 2);
+			setY(0);
 		} else if (position == Position.TOP_RIGHT) {
-			layout.addRule(ALIGN_PARENT_RIGHT);
-			layout.addRule(ALIGN_PARENT_TOP);
+			setX(maxWidth - getWidth());
+			setY(0);
 		} else if (position == Position.CENTER_LEFT) {
-			layout.addRule(ALIGN_PARENT_LEFT);
+			setX(0);
+			setY((maxHeight - getHeight()) / 2);
+		} else if (position == Position.CENTER) {
+			setX((maxWidth - getWidth()) / 2);
+			setY((maxHeight - getHeight()) / 2);
 		} else if (position == Position.CENTER_RIGHT) {
-			layout.addRule(ALIGN_PARENT_RIGHT);
+			setX(maxWidth - getWidth());
+			setY((maxHeight - getHeight()) / 2);
 		} else if (position == Position.BOTTOM_LEFT) {
-			layout.addRule(ALIGN_PARENT_LEFT);
-			layout.addRule(ALIGN_PARENT_BOTTOM);
+			setX(0);
+			setY(maxHeight - getHeight());
 		} else if (position == Position.BOTTOM_CENTER) {
-			layout.addRule(ALIGN_PARENT_BOTTOM);
+			setX((maxWidth - getWidth()) / 2);
+			setY(maxHeight - getHeight());
 		} else if (position == Position.BOTTOM_RIGHT) {
-			layout.addRule(ALIGN_PARENT_RIGHT);
-			layout.addRule(ALIGN_PARENT_BOTTOM);
-		} else {
-			// layout.addRule(CENTER_IN_PARENT);
+			setX(maxWidth - getWidth());
+			setY(maxHeight - getHeight());
 		}
+	}
+
+	public void setPosition(int x, int y) {
+		this.position = Position.COORDINATES;
+		this.startingX = x;
+		this.startingY = y;
+
+		setX(x);
+		setY(y);
 	}
 
 	@Override
@@ -241,6 +253,8 @@ public class DynamicAdView extends RelativeLayout {
 
 				zoomStartingWidth = getLayoutParams().width;
 				zoomStartingHeight = getLayoutParams().height;
+				zoomStartingX = (int) getX();
+				zoomStartingY = (int) getY();
 			}
 
 			break;
@@ -344,6 +358,9 @@ public class DynamicAdView extends RelativeLayout {
 						+ (int) ((startingHeight - currentHeight) * interpolatedTime);
 
 				requestLayout();
+
+				setX(zoomStartingX * interpolatedTime);
+				setY(zoomStartingY * interpolatedTime);
 
 				if (ad.getLargeImageBmp() != null) {
 					if (getLayoutParams().height < ad.getLargeImageBmp()
@@ -459,6 +476,19 @@ public class DynamicAdView extends RelativeLayout {
 	public void UpdateImage(Ad ad) {
 		this.ad = ad;
 
+		if (position == null) {
+			setX(0);
+			setY(0);
+		} else if (position == Position.COORDINATES) {
+			setX(startingX);
+			setY(startingY);
+		} else {
+			setPosition(position);
+		}
+
+		posX = getX();
+		posY = getY();
+
 		if (ad.getSmallImageBmp() != null) {
 			this.startingWidth = ad.getSmallImageBmp().getWidth();
 			this.startingHeight = ad.getSmallImageBmp().getHeight();
@@ -483,12 +513,6 @@ public class DynamicAdView extends RelativeLayout {
 
 		image.setImageBitmap(ad.getSmallImageBmp());
 		image.invalidate();
-
-		setX(0);
-		setY(0);
-
-		posX = 0;
-		posY = 0;
 
 		isFullScreen = false;
 	}

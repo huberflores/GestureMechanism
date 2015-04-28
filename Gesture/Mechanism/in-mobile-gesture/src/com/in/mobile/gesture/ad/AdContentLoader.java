@@ -14,6 +14,8 @@ package com.in.mobile.gesture.ad;
 
 import com.google.android.gcm.GCMRegistrar;
 import com.in.mobile.common.utilities.Commons;
+import com.in.mobile.gesture.ad.DynamicAdView.Position;
+
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -55,7 +57,7 @@ public class AdContentLoader {
 
 		activity.registerReceiver(messageReceiver, new IntentFilter(
 				Commons.DISPLAY_MESSAGE_ACTION));
-		
+
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -86,5 +88,13 @@ public class AdContentLoader {
 				dynamicAdView.UpdateImage(ad);
 			}
 		});
+	}
+
+	public void setPosition(Position position) {
+		dynamicAdView.setPosition(position);
+	}
+
+	public void setPosition(int x, int y) {
+		dynamicAdView.setPosition(x, y);
 	}
 }
