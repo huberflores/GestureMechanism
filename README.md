@@ -1,21 +1,12 @@
 Gesture Mechanism
 =================
 
-
 Requirements
 -------------
-```xml
-Android support v4 and v7 are required for this project to work.
-Import the projects from your local android sdk installation
-(~/android-sdk/extras/android/support/v4)
-(~/android-sdk/extras/android/support/v7)
+Android support v4 and v7 are required for this project to work. Import the projects from your local android sdk installation (~/android-sdk/extras/android/support/v4) (~/android-sdk/extras/android/support/v7) Right click in the project -> Properties -> Android -> (below box - add) Include the imported directories.
 
-Right click in the project -> Properties -> Android -> (below box - add)
-Include the imported directories.
-```
+AndroidManifest.xml needs to include following:
 ```xml
-AndroidManifest.xml needs to include following permissions:
-
 <permission
     android:name="your_package.permission.C2D_MESSAGE"
     android:protectionLevel="signature" />
@@ -28,9 +19,6 @@ AndroidManifest.xml needs to include following permissions:
 <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-```
-```xml
-AndroidManifest.xml needs to define the following receiver:
 
 <receiver
     android:name="com.in.mobile.gesture.ad.BroadcastReceiver"
@@ -42,19 +30,41 @@ AndroidManifest.xml needs to define the following receiver:
         <category android:name="your_package" />
     </intent-filter>
 </receiver>
-```
-
-```xml
-AndroidManifest.xml needs to define the following service:
 
 <service android:name="com.in.mobile.gesture.ad.GCMIntentService" />
 ```
 
-Configuration
--------------
+Usage:
+```
+import com.in.mobile.gesture.ad.AdContentLoader;
+import com.in.mobile.gesture.ad.DynamicAdView.Position;
 
+public class MyActivity extends Activity {
 
+	AdContentLoader adLoader;
 
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
 
-FAQ
--------------
+		// View code
+
+		adLoader = new AdContentLoader(this);
+		adLoader.setPosition(Position.TOP_RIGHT);
+	}
+
+	@Override
+	public void onPause() {
+		super.onPause();
+
+		adLoader.onPause();
+	}
+
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+
+		adLoader.destroy();
+	}
+}
+```
